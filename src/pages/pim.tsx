@@ -1,4 +1,8 @@
+import { useAppBridge } from "@saleor/app-sdk/app-bridge";
+import { SALEOR_AUTHORIZATION_BEARER_HEADER, SALEOR_DOMAIN_HEADER } from "@saleor/app-sdk/const";
 import React from "react";
+
+import { CreateSaleorProductBody } from "./api/create-saleor-product";
 
 type Product = {
     id: string;
@@ -39,8 +43,40 @@ const useStrapiProducts = () => {
     return { data: products, isLoading, error };
 };
 
+const useAddSaleorProduct = () => {
+    const [data, setData] = React.useState(undefined);
+    const [isLoading, setIsLoading] = React.useState(false);
+    const [error, setError] = React.useState<undefined | string>(undefined);
+
+    const { appBridgeState } = useAppBridge();
+
+    const addProduct = async (body: CreateSaleorProductBody) => {
+        try {
+            setIsLoading(true);
+            const response = await fetch("/api/create-saleor-product", {
+                method: "POST",
+                headers: [
+                    ["content-type", "application/json"],
+                    [SALEOR_DOMAIN_HEADER, appBridgeState?.domain!],
+                    [SALEOR_AUTHORIZATION_BEARER_HEADER, appBridgeState?.token!],
+                ],
+                body: JSON.stringify(body),
+            });
+            const result = await response.json();
+            setIsLoading(false);
+            setData(result);
+        } catch (e: unknown) {
+            setError(e as string);
+            setIsLoading(false);
+        }
+    };
+
+    return [{ data, isLoading, error }, addProduct];
+};
+
 function Pim() {
     const { data: products, isLoading } = useStrapiProducts();
+    const [{ data }] = useAddSaleorProduct();
     return (
         <div>
             <h1>Products from Strapi:</h1>
