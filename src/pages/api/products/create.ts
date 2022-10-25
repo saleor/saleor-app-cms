@@ -1,9 +1,9 @@
 import { SALEOR_DOMAIN_HEADER } from "@saleor/app-sdk/const";
 import type { NextApiHandler } from "next";
-import { CreateProductDocument, ProductCreateInput } from "../../../generated/graphql";
-import { apl } from "../../../saleor-app";
+import { CreateProductDocument, ProductCreateInput } from "../../../../generated/graphql";
+import { apl } from "../../../../saleor-app";
 
-import { createClient } from "../../lib/graphql";
+import { createClient } from "../../../lib/graphql";
 
 export type CreateSaleorProductBody = ProductCreateInput;
 
