@@ -9,7 +9,7 @@ export type CreateSaleorProductBody = ProductCreateInput;
 
 const handler: NextApiHandler = async (req, res) => {
   if (req.method !== "POST") {
-    res.status(500).json({ error: "Only POST is supported!" });
+    return res.status(500).json({ error: "Only POST is supported!" });
   }
 
   const body = req.body as CreateSaleorProductBody;
@@ -22,9 +22,9 @@ const handler: NextApiHandler = async (req, res) => {
       .json({ error: `Could not find auth data for the domain ${saleorDomain}.` });
   }
 
-  const client = createClient(`https://${saleorDomain}/graphql/`, async () =>
-    Promise.resolve({ token: authData.token })
-  );
+  const client = createClient(`https://${saleorDomain}/graphql/`, async () => ({
+    token: authData.token,
+  }));
 
   try {
     const { data, error } = await client
@@ -33,8 +33,12 @@ const handler: NextApiHandler = async (req, res) => {
       })
       .toPromise();
 
-    if (error) res.status(500).json({ error });
-    if (data?.productCreate?.errors) res.status(500).json({ error: data.productCreate.errors });
+    if (error) {
+      return res.status(500).json({ error });
+    }
+    if (data?.productCreate?.errors) {
+      return res.status(500).json({ error: data.productCreate.errors });
+    }
     return res.status(200).json({ ok: true });
   } catch (e: unknown) {
     return res.status(500).json({ error: e });
