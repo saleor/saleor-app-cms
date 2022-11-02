@@ -10,12 +10,11 @@ import {
 } from "../../generated/graphql";
 import { apl } from "../../saleor-app";
 import { createClient } from "../lib/graphql";
+import { getClientUrl } from "./saleor";
 
 export type CreateSaleorProductBody = CreateProductMutationVariables;
 export type EditSaleorProductBody = UpdateProductMutationVariables;
 export type DeleteSaleorProductBody = DeleteProductMutationVariables;
-
-const getClientUrl = (domain: string) => `https://${domain}/graphql/`;
 
 export const createProductHandler: NextApiHandler = async (req, res) => {
   const body = req.body as CreateSaleorProductBody;

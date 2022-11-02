@@ -1,5 +1,4 @@
 import type { NextApiHandler } from "next";
-export * from "../../api/productHandlers";
 
 import {
   createProductHandler,
