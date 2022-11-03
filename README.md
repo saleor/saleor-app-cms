@@ -36,3 +36,6 @@ All these options have in common that they will communicate with the `saleor-app
 You can find instructions for each CMS here:
 
 - [Strapi](./docs/strapi.md)
+
+## Progress
+See [here](./docs/todo.md).
