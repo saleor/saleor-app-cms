@@ -13,13 +13,13 @@ The currently supported CMSes are:
 
 ![image](https://user-images.githubusercontent.com/44495184/199695741-29797a19-066d-47cb-a439-1d87497e7559.png)
 
-Here is how `saleor-app-pim` ensures the two-way integration:
+Here is how `saleor-app-pim` ensures two-way integration:
 
 ### Saleor -> CMS
 
 1. `saleor-app-pim` listens to Saleor product events through Webhooks.
 2. When an event is triggered, we extract the product data from it and pass it to the CMS Client.
-3. CMS Client transforms the data to the desired format, and sends it to the CMS.
+3. CMS Client transforms the data to the desired format and sends it to the CMS.
 
 ### CMS -> Saleor
 
@@ -31,7 +31,7 @@ Enabling the integration the other way around requires your effort. You will hav
 - use a template (for a new app)
 - or copy & paste the code we provide
 
-What all of these options have in common is that they will communicate with the `saleor-app-pim` API that takes care of synchronising the products.
+All these options have in common that they will communicate with the `saleor-app-pim` API that takes care of synchronizing the products.
 
 You can find instructions for each CMS here:
 
