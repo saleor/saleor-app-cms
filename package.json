@@ -20,6 +20,7 @@
     "@saleor/app-sdk": "0.17.0",
     "@saleor/macaw-ui": "^0.6.5",
     "@urql/exchange-auth": "^1.0.0",
+    "contentful-management": "^10.19.1",
     "graphql": "^16.6.0",
     "graphql-tag": "^2.12.6",
     "next": "12.3.1",
