@@ -30,7 +30,15 @@ const handler: Handler<ProductCreatedParams> = async (request) => {
         },
       });
 
-      console.log(response);
+      // if (response.ok) {
+      //   // todo: use response.id to update metadata
+      //   await client
+      //     .mutation(UpdateProductMetadataDocument, {
+      //       input: [{ key: CMS_ID_KEY, value: metadata.cmsId }],
+      //       id,
+      //     })
+      //     .toPromise();
+      // }
     } catch (error) {
       console.log(error);
     }

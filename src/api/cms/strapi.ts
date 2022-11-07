@@ -1,5 +1,5 @@
 import { NEXT_PUBLIC_STRAPI_API_URL, NEXT_PUBLIC_STRAPI_AUTH_TOKEN } from "../../constants";
-import { CmsClient, ProductInput } from "./types";
+import { CmsClient, CreateProductResponse, ProductInput } from "./types";
 
 const strapiBaseUrl = NEXT_PUBLIC_STRAPI_API_URL;
 const strapiToken = NEXT_PUBLIC_STRAPI_AUTH_TOKEN;
@@ -23,10 +23,49 @@ const transformInputToBody = ({ input }: { input: ProductInput }): StrapiBody =>
   const body = {
     data: {
       name: input.name,
+      slug: input.slug,
       saleor_id: input.id,
+      image: input.image,
     },
   };
   return body;
+};
+
+type StrapiResponse =
+  | {
+      data: null;
+      error: {
+        status: number;
+        name: string;
+        message: string;
+        details?: {
+          errors: unknown[];
+        };
+      };
+    }
+  | {
+      data: {
+        id: string;
+        attributes: Record<string, any>;
+        meta: Record<string, any>;
+      };
+      error: null;
+    };
+
+const transformCreateProductResponse = (response: StrapiResponse): CreateProductResponse => {
+  if (response.error) {
+    return {
+      ok: false,
+      error: "Something went wrong!",
+    };
+  }
+
+  return {
+    ok: true,
+    data: {
+      id: response.data.id,
+    },
+  };
 };
 
 export const strapiClient: CmsClient = {
@@ -37,12 +76,16 @@ export const strapiClient: CmsClient = {
     get: ({ id }) => {
       return strapiFetch(`/products/${id}`);
     },
-    create: (params) => {
+    create: async (params) => {
       const body = transformInputToBody(params);
-      return strapiFetch("/products", {
+      const response = await strapiFetch("/products", {
         method: "POST",
         body: JSON.stringify(body),
       });
+
+      const result = await response.json();
+
+      return transformCreateProductResponse(result);
     },
     update: ({ id, input }) => {
       const body = transformInputToBody({ input });

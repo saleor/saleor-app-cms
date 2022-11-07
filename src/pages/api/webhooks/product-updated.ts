@@ -22,7 +22,7 @@ const handler: Handler<ProductUpdatedParams> = async (request) => {
   for (const product of products) {
     // !
     const cmsId = product.metadata?.cmsId;
-    // todo: replace
+    // todo: replace with real data
     const slug = "mocked";
     const image = "";
 
