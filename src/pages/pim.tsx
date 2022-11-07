@@ -1,8 +1,7 @@
 import { useAppBridge } from "@saleor/app-sdk/app-bridge";
 import { SALEOR_AUTHORIZATION_BEARER_HEADER, SALEOR_DOMAIN_HEADER } from "@saleor/app-sdk/const";
 import React from "react";
-import { CreateSaleorProductBody } from "../api/productHandlers";
-
+import { CreateSaleorProductBody } from "../api/product";
 
 type Product = {
     id: string;
@@ -76,7 +75,6 @@ const useAddSaleorProduct = () => {
 
 function Pim() {
     const { data: products, isLoading } = useStrapiProducts();
-    const [{ data }] = useAddSaleorProduct();
     return (
         <div>
             <h1>Products from Strapi:</h1>

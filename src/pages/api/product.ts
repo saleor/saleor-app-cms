@@ -4,7 +4,7 @@ import {
   createProductHandler,
   updateProductHandler,
   deleteProductHandler,
-} from "../../api/productHandlers";
+} from "../../api/product";
 
 const handler: NextApiHandler = async (req, res) => {
   switch (req.method) {

@@ -16,10 +16,13 @@ type ProductCreatedParams = Record<string, ProductCreated>;
 const handler: Handler<ProductCreatedParams> = async (request) => {
   const products = Object.values(request.params);
 
+  // * saleor-app-pim does not prevent duplications. You must take care of it in the CMS.
+  // * An example solution would be to use saleorId as unique key for the CMS product.
   for (const product of products) {
     try {
-      await cmsClient.products.create({
+      const response = await cmsClient.products.create({
         input: {
+          // * Currently, the only supported field is "name".
           name: product.name,
           // todo: replace with fetching the full product and using its product type
           productType: "1",
@@ -28,6 +31,8 @@ const handler: Handler<ProductCreatedParams> = async (request) => {
           saleorId: product.id,
         },
       });
+
+      console.log(response);
     } catch (error) {
       console.log(error);
     }

@@ -1,6 +1,7 @@
 import { ProductCreateInput } from "../../../generated/graphql";
 
 export type ProductInput = ProductCreateInput;
+// todo: remove saleorId
 export type ProductMeta = { saleorId: string };
 
 type CreateCrudOperations<TInput extends Record<string, any>, TMeta extends Record<string, any>> = {
