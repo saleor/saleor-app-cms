@@ -15,9 +15,8 @@ type ProductCreatedParams = Record<string, ProductCreated>;
 
 const handler: Handler<ProductCreatedParams> = async (request) => {
   const products = Object.values(request.params);
+  // ? How to determine whether the product has already been created?
 
-  // * saleor-app-pim does not prevent duplications. You must take care of it in the CMS.
-  // * An example solution would be to use saleorId as unique key for the CMS product.
   for (const product of products) {
     try {
       const response = await cmsClient.products.create({
@@ -28,6 +27,9 @@ const handler: Handler<ProductCreatedParams> = async (request) => {
           productType: "1",
         },
         meta: {
+          // * It's advised that saleorId is a unique key.
+          // * This way be it can be used to prevent duplications.
+          // ! In the current scenario, it does not prevent duplications for Strapi.
           saleorId: product.id,
         },
       });

@@ -3,15 +3,13 @@ import { NextApiHandler } from "next";
 import { Client } from "urql";
 import {
   CreateProductDocument,
-  CreateProductMutationVariables,
   DeleteProductDocument,
   DeleteProductMutationVariables,
-  UpdateProductDocument,
-  UpdateProductMutationVariables,
-  UpdateProductMetadataDocument,
-  ProductCreateInput,
-  MetadataInput,
   GetProductDocument,
+  ProductCreateInput,
+  UpdateProductDocument,
+  UpdateProductMetadataDocument,
+  UpdateProductMutationVariables,
 } from "../../generated/graphql";
 import { apl } from "../../saleor-app";
 import { createClient } from "../lib/graphql";
@@ -35,7 +33,7 @@ const checkProductExistence = async (client: Client, id: string) => {
     .toPromise();
 
   const metadata = data?.product?.metadata;
-  console.log(`metadata`, metadata);
+  console.log(metadata);
   const doesExist = true;
   if (doesExist) {
     throw new Error("This product has already been created!");
@@ -74,7 +72,7 @@ export const createProductHandler: NextApiHandler = async (req, res) => {
     }
 
     if (id) {
-      // * Update the product metadata to contain the cmsId.
+      // * Update the product metadata with the cmsId.
       // * `cmsId` is the id of the product in the CMS we integrate with.
       await client
         .mutation(UpdateProductMetadataDocument, {
