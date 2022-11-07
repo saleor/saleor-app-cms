@@ -1,5 +1,5 @@
 import { NEXT_PUBLIC_STRAPI_API_URL, NEXT_PUBLIC_STRAPI_AUTH_TOKEN } from "../../constants";
-import { CmsClient, ProductInput, ProductMeta } from "./types";
+import { CmsClient, ProductInput } from "./types";
 
 const strapiBaseUrl = NEXT_PUBLIC_STRAPI_API_URL;
 const strapiToken = NEXT_PUBLIC_STRAPI_AUTH_TOKEN;
@@ -19,17 +19,11 @@ type StrapiBody = {
   data: Record<string, any> & { saleor_id: string };
 };
 
-const transformInputToBody = ({
-  input,
-  meta,
-}: {
-  input: ProductInput;
-  meta: ProductMeta;
-}): StrapiBody => {
+const transformInputToBody = ({ input }: { input: ProductInput }): StrapiBody => {
   const body = {
     data: {
       name: input.name,
-      saleor_id: meta.saleorId,
+      saleor_id: input.id,
     },
   };
   return body;
@@ -50,8 +44,8 @@ export const strapiClient: CmsClient = {
         body: JSON.stringify(body),
       });
     },
-    update: ({ id, input, meta }) => {
-      const body = transformInputToBody({ input, meta });
+    update: ({ id, input }) => {
+      const body = transformInputToBody({ input });
       return strapiFetch(`/products/${id}`, { method: "PUT", body: JSON.stringify(body) });
     },
     delete: ({ id }) => {

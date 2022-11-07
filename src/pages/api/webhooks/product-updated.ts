@@ -13,7 +13,6 @@ import { cmsClient } from "../../../api/cms";
 type ProductUpdated = Record<string, any> & {
   name: string;
   id: string;
-  metadata?: Record<string, any> & { cmsId?: string };
 };
 type ProductUpdatedParams = Record<string, ProductUpdated>;
 
@@ -21,20 +20,21 @@ const handler: Handler<ProductUpdatedParams> = async (request) => {
   const products = Object.values(request.params);
 
   for (const product of products) {
+    // !
     const cmsId = product.metadata?.cmsId;
+    // todo: replace
+    const slug = "mocked";
+    const image = "";
 
     if (cmsId) {
       try {
         await cmsClient.products.update({
           id: cmsId,
           input: {
-            // * Currently, the only supported field is "name".
+            slug,
+            image,
+            id: product.id,
             name: product.name,
-            // todo: replace with fetching the full product and using its product type
-            productType: "1",
-          },
-          meta: {
-            saleorId: product.id,
           },
         });
       } catch (error) {
