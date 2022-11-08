@@ -54,7 +54,6 @@ const handler: Handler<ProductUpdatedParams> = async (request) => {
             id: cmsId,
             input: {
               slug: fullProduct.slug,
-              image: fullProduct.media?.[0].url ?? "",
               id: product.id,
               name: product.name,
             },

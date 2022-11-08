@@ -1,4 +1,4 @@
-export type ProductInput = { id: string; slug: string; image: string; name: string };
+export type ProductInput = Record<string, any> & { id: string; slug: string; name: string };
 
 export type CreateProductResponse =
   | { ok: true; data: { id: string } }

@@ -25,7 +25,6 @@ const transformInputToBody = ({ input }: { input: ProductInput }): StrapiBody =>
       name: input.name,
       slug: input.slug,
       saleor_id: input.id,
-      image: input.image,
     },
   };
   return body;
