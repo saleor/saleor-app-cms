@@ -21,7 +21,7 @@ export default createManifestHandler({
       ],
       extensions: [
         {
-          label: "Strapi PIM",
+          label: "CMS Hub",
           mount: "NAVIGATION_CATALOG",
           target: "APP_PAGE",
           permissions: ["MANAGE_PRODUCTS"],
