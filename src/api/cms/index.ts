@@ -2,9 +2,7 @@ import { SALEOR_AUTHORIZATION_BEARER_HEADER, SALEOR_DOMAIN_HEADER } from "@saleo
 import { SettingsApiResponse } from "../../pages/api/settings";
 import { CMSProvider } from "./providers";
 import { strapiClient } from "./strapi";
-
-// const cmsProvider: CMSProvider | string | undefined = NEXT_PUBLIC_CMS_PROVIDER;
-// todo: replace with real
+import { contentfulClient } from "./contentful";
 
 // todo: use settings to decide on the cms provider
 // todo: add support for multiple
@@ -39,6 +37,9 @@ export const createCmsClient = async ({
   switch (provider) {
     case "strapi": {
       return strapiClient;
+    }
+    case "contentful": {
+      return contentfulClient;
     }
 
     default: {
