@@ -34,9 +34,6 @@ const handler: Handler<ProductCreatedParams> = async (request) => {
   );
 
   for (const product of products) {
-    // todo: replace with real data
-    const image = "";
-
     try {
       const getProductResponse = await client
         .query(GetProductDocument, {
@@ -52,7 +49,7 @@ const handler: Handler<ProductCreatedParams> = async (request) => {
             id: product.id,
             name: product.name,
             slug: fullProduct?.slug,
-            image,
+            image: fullProduct.media?.[0].url ?? "",
           },
         });
 

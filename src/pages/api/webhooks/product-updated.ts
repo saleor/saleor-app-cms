@@ -38,8 +38,6 @@ const handler: Handler<ProductUpdatedParams> = async (request) => {
 
   for (const product of products) {
     const cmsId = product.metadata?.cmsId;
-    // todo: replace with real data
-    const image = "";
 
     if (cmsId) {
       try {
@@ -56,7 +54,7 @@ const handler: Handler<ProductUpdatedParams> = async (request) => {
             id: cmsId,
             input: {
               slug: fullProduct.slug,
-              image,
+              image: fullProduct.media?.[0].url ?? "",
               id: product.id,
               name: product.name,
             },
