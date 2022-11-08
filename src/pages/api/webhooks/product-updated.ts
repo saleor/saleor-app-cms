@@ -16,6 +16,7 @@ import { createClient } from "../../../lib/graphql";
 type ProductUpdated = Record<string, any> & {
   name: string;
   id: string;
+  metadata?: unknown & { cmsId?: string };
 };
 type ProductUpdatedParams = Record<string, ProductUpdated>;
 

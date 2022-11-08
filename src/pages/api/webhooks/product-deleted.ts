@@ -11,13 +11,11 @@ import { saleorApp } from "../../../../saleor-app";
 import { cmsClient } from "../../../api/cms";
 
 type ProductDeleted = Record<string, any> & {
-  name: string;
-  id: string;
+  metadata?: unknown & { cmsId?: string };
 };
 type ProductDeletedParams = Record<string, ProductDeleted>;
 
 const handler: Handler<ProductDeletedParams> = async (request) => {
-  console.log("product deleted");
   const products = Object.values(request.params);
 
   for (const product of products) {
