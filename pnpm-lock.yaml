@@ -27,9 +27,11 @@ specifiers:
   prettier: ^2.7.1
   react: 18.2.0
   react-dom: 18.2.0
+  react-hook-form: ^7.39.1
   retes: ^0.34.0
   typescript: 4.8.4
   urql: ^3.0.3
+  zod: ^3.19.1
 
 dependencies:
   '@material-ui/core': 4.12.4_rj7ozvcq3uehdlnj3cbwzbi5ce
@@ -43,8 +45,10 @@ dependencies:
   next: 12.3.1_biqbaboplfbrettd7655fr4n2y
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
+  react-hook-form: 7.39.1_react@18.2.0
   retes: 0.34.0
   urql: 3.0.3_onqnqwb3ubg5opvemcqf7c2qhy
+  zod: 3.19.1
 
 devDependencies:
   '@graphql-codegen/cli': 2.13.3_limes5yjip7vwykkgb7cd6yvjm
@@ -4633,6 +4637,15 @@ packages:
     resolution: {integrity: sha512-qvWWTL/4xw4k/Dywd41RBpLQUSq97csuv15qrxN+izNeLYlD9wn5W8LspbfYe5CWbaSdkZ72BsaYBPQf2x4VbQ==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.2.0
+    dev: false
+
+  /react-hook-form/7.39.1_react@18.2.0:
+    resolution: {integrity: sha512-MiF9PCILN5KulhSGbnjohMiTOrB47GerDTichMNP0y2cPUu1GTRFqbunOxCE9N1499YTLMV/ne4gFzqCp1rxrQ==}
+    engines: {node: '>=12.22.0'}
+    peerDependencies:
+      react: ^16.8.0 || ^17 || ^18
     dependencies:
       react: 18.2.0
     dev: false
