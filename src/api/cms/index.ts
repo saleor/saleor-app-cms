@@ -38,6 +38,7 @@ export const createCmsClient = async ({
     case "strapi": {
       return strapiClient;
     }
+
     case "contentful": {
       return contentfulClient;
     }
