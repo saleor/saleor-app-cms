@@ -1,9 +1,12 @@
-function Pim() {
+import { Views } from "../views";
+
+function Hub() {
     return (
         <div>
-            <h1>Hello to saleor-app-cms-hub 🕺</h1>
+            <h1>CMS hub 🕺</h1>
+            <Views />
         </div>
     );
 }
 
-export default Pim;
+export default Hub;

@@ -1,7 +1,10 @@
 import { NEXT_PUBLIC_CMS_PROVIDER } from "../../constants";
 import { strapiClient } from "./strapi";
 
-const cmsProvider = NEXT_PUBLIC_CMS_PROVIDER;
+export const cmsProviders = ["strapi"] as const;
+export type CMSProvider = typeof cmsProviders[number];
+
+const cmsProvider: CMSProvider | string | undefined = NEXT_PUBLIC_CMS_PROVIDER;
 
 const createCmsClient = () => {
   switch (cmsProvider) {
