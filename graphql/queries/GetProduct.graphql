@@ -1,11 +1,5 @@
 query GetProduct($id: ID!) {
   product(id: $id) {
-    metadata {
-      key
-      value
-    }
-    productType {
-      id
-    }
+    slug
   }
 }
