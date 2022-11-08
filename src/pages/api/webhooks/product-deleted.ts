@@ -28,6 +28,9 @@ const handler: Handler<ProductDeletedParams> = async (request) => {
         });
       } catch (error) {
         console.log(error);
+        return Response.InternalServerError({
+          error: "Something went wrong",
+        });
       }
     } else {
       return Response.InternalServerError({
