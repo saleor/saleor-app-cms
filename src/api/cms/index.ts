@@ -1,9 +1,7 @@
 import { SALEOR_AUTHORIZATION_BEARER_HEADER, SALEOR_DOMAIN_HEADER } from "@saleor/app-sdk/const";
-import { NEXT_PUBLIC_CMS_PROVIDER } from "../../constants";
 import { SettingsApiResponse } from "../../pages/api/settings";
 import { CMSProvider } from "./providers";
 import { strapiClient } from "./strapi";
-import { CmsClient } from "./types";
 
 // const cmsProvider: CMSProvider | string | undefined = NEXT_PUBLIC_CMS_PROVIDER;
 // todo: replace with real

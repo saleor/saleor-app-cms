@@ -1,16 +1,18 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SALEOR_AUTHORIZATION_BEARER_HEADER, SALEOR_DOMAIN_HEADER } from "@saleor/app-sdk/const";
 import { useAppBridge } from "@saleor/app-sdk/app-bridge";
+import { SALEOR_AUTHORIZATION_BEARER_HEADER, SALEOR_DOMAIN_HEADER } from "@saleor/app-sdk/const";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { CMSProvider, cmsProvidersConfig } from "../api/cms/providers";
+import { CMSProvider, CMSProviderConfig, defaultCmsProvidersFields } from "../api/cms/providers";
 import { SettingsApiResponse, SettingsUpdateApiRequest } from "../pages/api/settings";
 
-type FormValues = Record<CMSProvider, boolean>;
+type FormValues = CMSProviderConfig;
 
 const schema: z.ZodType<FormValues> = z.object({
-  strapi: z.boolean(),
+  strapi: z.object({
+    enabled: z.boolean(),
+  }),
 });
 
 export const ConfigurationForm = () => {
@@ -20,7 +22,13 @@ export const ConfigurationForm = () => {
   const { register, handleSubmit, reset } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      strapi: false,
+      strapi: {
+        enabled: false,
+        // tokens: {
+        //   apiUrl: "",
+        //   apiToken: "",
+        // },
+      },
     },
   });
 
@@ -40,7 +48,10 @@ export const ConfigurationForm = () => {
 
     if (result.success) {
       const formValues = result.data?.reduce<FormValues>(
-        (prev, next) => ({ ...prev, [next.key]: next.value === "true" }),
+        (prev, next) => ({
+          ...prev,
+          [next.key]: { enabled: next.value === "true" },
+        }),
         {} as FormValues
       );
 
@@ -68,9 +79,9 @@ export const ConfigurationForm = () => {
   }, []);
 
   const submitHandler = (values: FormValues) => {
-    const settings: SettingsUpdateApiRequest = Object.entries(values).map(([key, value]) => ({
+    const settings: SettingsUpdateApiRequest = Object.entries(values).map(([key, config]) => ({
       key,
-      value: String(value),
+      value: String(config.enabled),
     }));
 
     saveSettings(settings);
@@ -88,20 +99,32 @@ export const ConfigurationForm = () => {
           gap: "0.5rem",
         }}
       >
-        {Object.entries(cmsProvidersConfig).map(([provider, config]) => (
+        {Object.entries(defaultCmsProvidersFields).map(([provider, config]) => (
           <li key={provider}>
-            <label>
-              <span>{config.label}</span>
-              <input {...register(provider as CMSProvider)} type="checkbox" />
-            </label>
-            {/* {config.tokens.map((token) => (
-              <div key={token}>
-                <label>
-                  {token}
-                  <input type="text" name={token} />
-                </label>
-              </div>
-            ))} */}
+            <details>
+              <summary>
+                <span>{config.label}</span>
+              </summary>
+              <label>
+                On / off
+                <input
+                  {...register(`${provider}.enabled` as `${CMSProvider}.enabled`)}
+                  type="checkbox"
+                />
+              </label>
+              {/* {Object.entries(config.tokens).map(([tokenName]) => (
+                <div key={tokenName}>
+                  <label>
+                    {tokenName}
+                    <input
+                      {...register(tokenName as `${CMSProvider}.tokens.${string}`)}
+                      type="password"
+                      name={tokenName}
+                    />
+                  </label>
+                </div>
+              ))} */}
+            </details>
           </li>
         ))}
       </ul>
