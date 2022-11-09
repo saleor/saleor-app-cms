@@ -13,6 +13,9 @@ const schema: z.ZodType<FormValues> = z.object({
   strapi: z.object({
     enabled: z.boolean(),
   }),
+  contentful: z.object({
+    enabled: z.boolean(),
+  }),
 });
 
 export const ConfigurationForm = () => {
@@ -28,6 +31,9 @@ export const ConfigurationForm = () => {
         //   apiUrl: "",
         //   apiToken: "",
         // },
+      },
+      contentful: {
+        enabled: false,
       },
     },
   });
