@@ -1,8 +1,6 @@
 import { NEXT_PUBLIC_CMS_PROVIDER } from "../../constants";
+import { CMSProvider } from "./providers";
 import { strapiClient } from "./strapi";
-
-export const cmsProviders = ["strapi"] as const;
-export type CMSProvider = typeof cmsProviders[number];
 
 const cmsProvider: CMSProvider | string | undefined = NEXT_PUBLIC_CMS_PROVIDER;
 
