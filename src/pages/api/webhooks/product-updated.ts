@@ -52,6 +52,8 @@ const handler: Handler<ProductUpdatedParams> = async (request) => {
 
         if (fullProduct) {
           await cmsClient.products.update({
+            // * In some CMSes, cmsId may be productId. Perhaps it's better to just pass everything as one big object
+            // * and decide on the id on the adapter level.
             id: cmsId,
             input: {
               slug: fullProduct.slug,

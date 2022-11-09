@@ -5,10 +5,11 @@ import {
   withSaleorEventMatch,
   withWebhookSignatureVerified,
 } from "@saleor/app-sdk/middleware";
+// todo: get rid of retes
 import { Handler } from "retes";
 import { toNextHandler } from "retes/adapter";
 import { Response } from "retes/response";
-import { GetProductDocument, UpdateProductMetadataDocument } from "../../../../generated/graphql";
+import { GetProductDocument, UpdateMetadataDocument } from "../../../../generated/graphql";
 import { saleorApp } from "../../../../saleor-app";
 import { cmsClient } from "../../../api/cms";
 import { createClient } from "../../../lib/graphql";
@@ -55,7 +56,7 @@ const handler: Handler<ProductCreatedParams> = async (request) => {
 
         if (updateProductResponse.ok) {
           await client
-            .mutation(UpdateProductMetadataDocument, {
+            .mutation(UpdateMetadataDocument, {
               input: [{ key: CMS_ID_KEY, value: updateProductResponse.data.id }],
               id: product.id,
             })
