@@ -11,7 +11,8 @@ import { toNextHandler } from "retes/adapter";
 import { Response } from "retes/response";
 import { GetProductDocument, UpdateMetadataDocument } from "../../../../generated/graphql";
 import { saleorApp } from "../../../../saleor-app";
-import { cmsClient } from "../../../api/cms";
+import { createCmsClient } from "../../../api/cms";
+
 import { createClient } from "../../../lib/graphql";
 
 const CMS_ID_KEY = "cmsId";
@@ -30,37 +31,43 @@ const handler: Handler<ProductCreatedParams> = async (request) => {
     });
   }
 
+  const token = authData.token;
+
   const client = createClient(`https://${saleorDomain}/graphql/`, async () =>
-    Promise.resolve({ token: authData.token })
+    Promise.resolve({ token })
   );
 
   for (const product of products) {
     try {
-      const getProductResponse = await client
-        .query(GetProductDocument, {
-          id: product.id,
-        })
-        .toPromise();
+      const cmsClient = await createCmsClient({ domain: saleorDomain, token, host: request.host });
 
-      const fullProduct = getProductResponse?.data?.product;
-
-      if (fullProduct) {
-        const updateProductResponse = await cmsClient.products.create({
-          input: {
+      if (cmsClient) {
+        const getProductResponse = await client
+          .query(GetProductDocument, {
             id: product.id,
-            name: product.name,
-            slug: fullProduct?.slug,
-            image: fullProduct.media?.[0].url ?? "",
-          },
-        });
+          })
+          .toPromise();
 
-        if (updateProductResponse.ok) {
-          await client
-            .mutation(UpdateMetadataDocument, {
-              input: [{ key: CMS_ID_KEY, value: updateProductResponse.data.id }],
+        const fullProduct = getProductResponse?.data?.product;
+
+        if (fullProduct) {
+          const updateProductResponse = await cmsClient?.products.create({
+            input: {
               id: product.id,
-            })
-            .toPromise();
+              name: product.name,
+              slug: fullProduct?.slug,
+              image: fullProduct.media?.[0]?.url ?? "",
+            },
+          });
+
+          if (updateProductResponse?.ok) {
+            await client
+              .mutation(UpdateMetadataDocument, {
+                input: [{ key: CMS_ID_KEY, value: updateProductResponse.data.id }],
+                id: product.id,
+              })
+              .toPromise();
+          }
         }
       }
     } catch (error) {
