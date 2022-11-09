@@ -10,7 +10,7 @@ import { toNextHandler } from "retes/adapter";
 import { Response } from "retes/response";
 import { GetProductDocument } from "../../../../generated/graphql";
 import { saleorApp } from "../../../../saleor-app";
-import { cmsClient } from "../../../api/cms";
+import { createCmsClient } from "../../../api/cms";
 import { createClient } from "../../../lib/graphql";
 
 type ProductUpdated = Record<string, any> & {
@@ -33,6 +33,8 @@ const handler: Handler<ProductUpdatedParams> = async (request) => {
     });
   }
 
+  const token = authData.token;
+  const cmsClient = await createCmsClient({ domain: saleorDomain, token, host: request.host });
   const client = createClient(`https://${saleorDomain}/graphql/`, async () =>
     Promise.resolve({ token: authData.token })
   );
@@ -40,7 +42,7 @@ const handler: Handler<ProductUpdatedParams> = async (request) => {
   for (const product of products) {
     const cmsId = product.metadata?.cmsId;
 
-    if (cmsId) {
+    if (cmsId && cmsClient) {
       try {
         const getProductResponse = await client
           .query(GetProductDocument, {
@@ -52,12 +54,14 @@ const handler: Handler<ProductUpdatedParams> = async (request) => {
 
         if (fullProduct) {
           await cmsClient.products.update({
+            // * In some CMSes, cmsId may be productId. Perhaps it's better to just pass everything as one big object
+            // * and decide on the id on the adapter level.
             id: cmsId,
             input: {
               slug: fullProduct.slug,
               id: product.id,
               name: product.name,
-              image: fullProduct.media?.[0].url ?? "",
+              image: fullProduct.media?.[0]?.url ?? "",
             },
           });
         }

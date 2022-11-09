@@ -14,6 +14,7 @@
     "schemaVersion": "3.7"
   },
   "dependencies": {
+    "@hookform/resolvers": "^2.9.10",
     "@material-ui/core": "^4.12.4",
     "@material-ui/icons": "^4.11.3",
     "@material-ui/lab": "4.0.0-alpha.61",
@@ -25,8 +26,10 @@
     "next": "12.3.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-hook-form": "^7.39.1",
     "retes": "^0.34.0",
-    "urql": "^3.0.3"
+    "urql": "^3.0.3",
+    "zod": "^3.19.1"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "2.13.3",

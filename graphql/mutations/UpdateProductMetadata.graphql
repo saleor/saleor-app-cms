@@ -1,4 +1,4 @@
-mutation UpdateProductMetadata($id: ID!, $input: [MetadataInput!]!) {
+mutation UpdateMetadata($id: ID!, $input: [MetadataInput!]!) {
   updateMetadata(id: $id, input: $input) {
     errors {
       field

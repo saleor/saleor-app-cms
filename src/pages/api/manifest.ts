@@ -25,7 +25,7 @@ export default createManifestHandler({
           mount: "NAVIGATION_CATALOG",
           target: "APP_PAGE",
           permissions: ["MANAGE_PRODUCTS"],
-          url: "/pim",
+          url: "/hub",
         },
       ],
     };

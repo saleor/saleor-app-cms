@@ -1,6 +1,5 @@
-import { NextPage } from "next";
 import { useAppBridge } from "@saleor/app-sdk/app-bridge";
-import { Button } from "@saleor/macaw-ui";
+import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 
@@ -16,7 +15,7 @@ const IndexPage: NextPage = () => {
   const { appBridgeState } = useAppBridge();
   const [mounted, setMounted] = useState(false)
 
-  useEffect(() => {setMounted(true)},[])
+  useEffect(() => { setMounted(true) }, [])
 
   return (
     <div>
