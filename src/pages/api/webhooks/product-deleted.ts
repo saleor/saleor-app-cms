@@ -1,69 +1,68 @@
-import { SALEOR_DOMAIN_HEADER } from "@saleor/app-sdk";
-import {
-  withRegisteredSaleorDomainHeader,
-  withSaleorApp,
-  withSaleorEventMatch,
-  withWebhookSignatureVerified,
-} from "@saleor/app-sdk/middleware";
-import { Handler } from "retes";
-import { toNextHandler } from "retes/adapter";
-import { Response } from "retes/response";
+import { NextWebhookApiHandler, SaleorAsyncWebhook } from "@saleor/app-sdk/handlers/next";
+import { gql } from "urql";
+import { ProductDeletedWebhookPayloadFragment } from "../../../../generated/graphql";
 import { saleorApp } from "../../../../saleor-app";
-import { createCmsClient } from "../../../api/cms";
-
-type ProductDeleted = Record<string, any> & {
-  metadata?: unknown & { cmsId?: string };
-};
-type ProductDeletedParams = Record<string, ProductDeleted>;
-
-const handler: Handler<ProductDeletedParams> = async (request) => {
-  const products = Object.values(request.params);
-  const saleorDomain = request.headers[SALEOR_DOMAIN_HEADER] as string;
-  const authData = await saleorApp.apl.get(saleorDomain);
-
-  if (!authData) {
-    return Response.Forbidden({
-      error: `Could not find auth data for the domain ${saleorDomain}. Check if the app is installed.`,
-    });
-  }
-
-  const token = authData.token;
-  const cmsClient = await createCmsClient({ domain: saleorDomain, token, host: request.host });
-
-  for (const product of products) {
-    const cmsId = product.metadata?.cmsId;
-
-    if (cmsId && cmsClient) {
-      try {
-        await cmsClient.products.delete({
-          id: cmsId,
-        });
-      } catch (error) {
-        console.log(error);
-        return Response.InternalServerError({
-          error: "Something went wrong",
-        });
-      }
-    } else {
-      return Response.InternalServerError({
-        error: "Unable to delete the CMS product. cmsId was not found in the product metadata.",
-      });
-    }
-  }
-
-  return Response.OK({ ok: true });
-};
-
-export default toNextHandler([
-  withSaleorApp(saleorApp),
-  withRegisteredSaleorDomainHeader,
-  withSaleorEventMatch("product_deleted"),
-  withWebhookSignatureVerified(),
-  handler,
-]);
+import { createCmsClient, getCmsIdFromProduct } from "../../../lib/cms";
 
 export const config = {
   api: {
     bodyParser: false,
   },
 };
+
+export const ProductDeletedWebhookPayload = gql`
+  fragment ProductDeletedWebhookPayload on ProductDeleted {
+    product {
+      id
+      metadata {
+        key
+        value
+      }
+    }
+  }
+`;
+
+export const ProductDeletedSubscription = gql`
+  ${ProductDeletedWebhookPayload}
+  subscription ProductDeleted {
+    event {
+      ...ProductDeletedWebhookPayload
+    }
+  }
+`;
+
+export const productDeletedWebhook = new SaleorAsyncWebhook<ProductDeletedWebhookPayloadFragment>({
+  name: "Cms-hub product deleted webhook",
+  webhookPath: "api/webhooks/product-deleted",
+  asyncEvent: "PRODUCT_DELETED",
+  apl: saleorApp.apl,
+  subscriptionQueryAst: ProductDeletedSubscription,
+});
+
+export const handler: NextWebhookApiHandler<ProductDeletedWebhookPayloadFragment> = async (
+  req,
+  res,
+  context
+) => {
+  const { product } = context.payload;
+  const cmsClient = await createCmsClient(context);
+  console.log("PRODUCT_DELETED triggered");
+
+  if (product && cmsClient) {
+    const cmsId = getCmsIdFromProduct(product);
+
+    if (cmsId) {
+      try {
+        await cmsClient.products.delete({
+          id: cmsId,
+        });
+        return res.status(200).end();
+      } catch (error) {
+        console.log(error);
+        return res.status(500).json({ error });
+      }
+    }
+  }
+};
+
+export default productDeletedWebhook.createHandler(handler);

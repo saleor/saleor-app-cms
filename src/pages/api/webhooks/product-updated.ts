@@ -1,96 +1,83 @@
-import { SALEOR_DOMAIN_HEADER } from "@saleor/app-sdk";
-import {
-  withRegisteredSaleorDomainHeader,
-  withSaleorApp,
-  withSaleorEventMatch,
-  withWebhookSignatureVerified,
-} from "@saleor/app-sdk/middleware";
-import { Handler } from "retes";
-import { toNextHandler } from "retes/adapter";
-import { Response } from "retes/response";
-import { GetProductDocument } from "../../../../generated/graphql";
+import { NextWebhookApiHandler, SaleorAsyncWebhook } from "@saleor/app-sdk/handlers/next";
+import { gql } from "urql";
+import { ProductUpdatedWebhookPayloadFragment } from "../../../../generated/graphql";
 import { saleorApp } from "../../../../saleor-app";
-import { createCmsClient } from "../../../api/cms";
-import { createClient } from "../../../lib/graphql";
-
-type ProductUpdated = Record<string, any> & {
-  name: string;
-  id: string;
-  metadata?: unknown & { cmsId?: string };
-};
-type ProductUpdatedParams = Record<string, ProductUpdated>;
-
-const handler: Handler<ProductUpdatedParams> = async (request) => {
-  // * product_updated event triggers on product_created as well 🤷
-  // todo: recognize duplicated events
-  const products = Object.values(request.params);
-  const saleorDomain = request.headers[SALEOR_DOMAIN_HEADER] as string;
-  const authData = await saleorApp.apl.get(saleorDomain);
-
-  if (!authData) {
-    return Response.Forbidden({
-      error: `Could not find auth data for the domain ${saleorDomain}. Check if the app is installed.`,
-    });
-  }
-
-  const token = authData.token;
-  const cmsClient = await createCmsClient({ domain: saleorDomain, token, host: request.host });
-  const client = createClient(`https://${saleorDomain}/graphql/`, async () =>
-    Promise.resolve({ token: authData.token })
-  );
-
-  for (const product of products) {
-    const cmsId = product.metadata?.cmsId;
-
-    if (cmsId && cmsClient) {
-      try {
-        const getProductResponse = await client
-          .query(GetProductDocument, {
-            id: product.id,
-          })
-          .toPromise();
-
-        const fullProduct = getProductResponse?.data?.product;
-
-        if (fullProduct) {
-          await cmsClient.products.update({
-            // * In some CMSes, cmsId may be productId. Perhaps it's better to just pass everything as one big object
-            // * and decide on the id on the adapter level.
-            id: cmsId,
-            input: {
-              slug: fullProduct.slug,
-              id: product.id,
-              name: product.name,
-              image: fullProduct.media?.[0]?.url ?? "",
-            },
-          });
-        }
-      } catch (error) {
-        console.log(error);
-        return Response.InternalServerError({
-          error: "Something went wrong",
-        });
-      }
-    } else {
-      return Response.InternalServerError({
-        error: "Unable to update the CMS product. cmsId was not found in the product metadata.",
-      });
-    }
-  }
-
-  return Response.OK({ ok: true });
-};
-
-export default toNextHandler([
-  withSaleorApp(saleorApp),
-  withRegisteredSaleorDomainHeader,
-  withSaleorEventMatch("product_updated"),
-  withWebhookSignatureVerified(),
-  handler,
-]);
+import { createCmsClient, getCmsIdFromProduct } from "../../../lib/cms";
 
 export const config = {
   api: {
     bodyParser: false,
   },
 };
+
+export const ProductUpdatedWebhookPayload = gql`
+  fragment ProductUpdatedWebhookPayload on ProductUpdated {
+    product {
+      id
+      name
+      slug
+      media {
+        url
+      }
+      metadata {
+        key
+        value
+      }
+    }
+  }
+`;
+
+export const ProductUpdatedSubscription = gql`
+  ${ProductUpdatedWebhookPayload}
+  subscription ProductUpdated {
+    event {
+      ...ProductUpdatedWebhookPayload
+    }
+  }
+`;
+
+export const productUpdatedWebhook = new SaleorAsyncWebhook<ProductUpdatedWebhookPayloadFragment>({
+  name: "Cms-hub product updated webhook",
+  webhookPath: "api/webhooks/product-updated",
+  asyncEvent: "PRODUCT_UPDATED",
+  apl: saleorApp.apl,
+  subscriptionQueryAst: ProductUpdatedSubscription,
+});
+
+export const handler: NextWebhookApiHandler<ProductUpdatedWebhookPayloadFragment> = async (
+  req,
+  res,
+  context
+) => {
+  // * product_updated event triggers on product_created as well 🤷
+  const { product } = context.payload;
+  const cmsClient = await createCmsClient(context);
+  console.log("PRODUCT_UPDATED triggered");
+
+  if (product) {
+    const cmsId = getCmsIdFromProduct(product);
+
+    if (cmsId && cmsClient) {
+      try {
+        await cmsClient.products.update({
+          // todo: change params of product methods because of below:
+          // * In some CMSes, cmsId may be productId. Perhaps it's better to just pass everything as one big object
+          // * and decide on the id on the adapter level.
+          id: cmsId,
+          input: {
+            slug: product.slug,
+            id: product.id,
+            name: product.name,
+            image: product.media?.[0]?.url ?? "",
+          },
+        });
+        return res.status(200).end();
+      } catch (error) {
+        console.log(error);
+        return res.status(500).json({ error });
+      }
+    }
+  }
+};
+
+export default productUpdatedWebhook.createHandler(handler);
