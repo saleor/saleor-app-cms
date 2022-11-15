@@ -2,8 +2,8 @@ import { SALEOR_DOMAIN_HEADER } from "@saleor/app-sdk/const";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 import { saleorApp } from "../../../saleor-app";
-import { cmsProviders } from "../../api/cms/providers";
-import { createSettingsManager } from "../../api/metadata";
+import { cmsProviders } from "../../lib/cms/adapters/config";
+import { createSettingsManager } from "../../lib/metadata";
 import { createClient } from "../../lib/graphql";
 
 type Setting = {

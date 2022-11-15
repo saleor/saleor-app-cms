@@ -1,5 +1,5 @@
-import { NEXT_PUBLIC_STRAPI_API_URL, NEXT_PUBLIC_STRAPI_AUTH_TOKEN } from "../../constants";
-import { CmsClient, CreateProductResponse, ProductInput } from "./types";
+import { NEXT_PUBLIC_STRAPI_API_URL, NEXT_PUBLIC_STRAPI_AUTH_TOKEN } from "../../../constants";
+import { CmsClient, CreateProductResponse, ProductInput } from "../types";
 
 const strapiBaseUrl = NEXT_PUBLIC_STRAPI_API_URL;
 const strapiToken = NEXT_PUBLIC_STRAPI_AUTH_TOKEN;

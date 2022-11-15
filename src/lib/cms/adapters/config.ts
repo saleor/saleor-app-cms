@@ -1,9 +1,8 @@
-import React from "react";
-
 type BaseConfig = {
   enabled: boolean;
 };
 
+// todo: add tokens to configuration
 type MakeConfig<TTokens extends string> = BaseConfig; /* & {
   tokens: Record<TTokens, string | null>;
 }; */
@@ -16,10 +15,7 @@ export type CMSProviderConfig = {
   contentful: ContentfulConfig;
 };
 
-export const defaultCmsProvidersFields: Record<
-  CMSProvider,
-  { label: string; icon?: React.ReactNode }
-> = {
+export const defaultCmsProvidersFields: Record<CMSProvider, { label: string }> = {
   strapi: {
     label: "Strapi",
   },
