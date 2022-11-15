@@ -1,7 +1,8 @@
 import { SALEOR_AUTHORIZATION_BEARER_HEADER, SALEOR_DOMAIN_HEADER } from "@saleor/app-sdk/const";
 import { NextWebhookApiHandler } from "@saleor/app-sdk/handlers/next";
 import { SettingsApiResponse } from "../../pages/api/settings";
-import { CMSProvider, contentfulClient, strapiClient } from "./adapters";
+import { contentfulClient, strapiClient } from "./adapters";
+import { CMSProvider } from "./adapters/config";
 
 type WebhookContext = Parameters<NextWebhookApiHandler>["2"];
 
