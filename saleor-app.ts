@@ -1,4 +1,4 @@
-import { SaleorApp } from "@saleor/app-sdk";
+import { SaleorApp } from "@saleor/app-sdk/saleor-app";
 import { FileAPL, VercelAPL } from "@saleor/app-sdk/APL";
 
 const isVercel = process.env.VERCEL === "1";

@@ -5,8 +5,8 @@ import {
   NEXT_PUBLIC_CONTENTFUL_CONTENT_ID,
   NEXT_PUBLIC_CONTENTFUL_ENVIRONMENT,
   NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
-} from "../../constants";
-import { CmsClient, CreateProductResponse, ProductInput } from "./types";
+} from "../../../constants";
+import { CmsClient, CreateProductResponse, ProductInput } from "../types";
 
 const contentfulBaseUrl = "https://api.contentful.com";
 const contentfulDefaultLocale = "en-US";

@@ -1,22 +1,17 @@
 import { SALEOR_AUTHORIZATION_BEARER_HEADER, SALEOR_DOMAIN_HEADER } from "@saleor/app-sdk/const";
+import { NextWebhookApiHandler } from "@saleor/app-sdk/handlers/next";
 import { SettingsApiResponse } from "../../pages/api/settings";
-import { CMSProvider } from "./providers";
-import { strapiClient } from "./strapi";
-import { contentfulClient } from "./contentful";
+import { CMSProvider, contentfulClient, strapiClient } from "./adapters";
 
-// todo: use settings to decide on the cms provider
-// todo: add support for multiple
+type WebhookContext = Parameters<NextWebhookApiHandler>["2"];
 
-export const createCmsClient = async ({
-  domain,
-  token,
-  host,
-}: {
-  domain: string;
-  token: string;
-  host: string;
-}) => {
-  const response = await fetch(`https://${host}/api/settings`, {
+// todo: add support for multiple adapters at once
+
+export const createCmsClient = async (context: WebhookContext) => {
+  const host = context.baseUrl;
+  const domain = context.authData.domain;
+  const token = context.authData.token;
+  const response = await fetch(`${host}/api/settings`, {
     headers: [
       ["content-type", "application/json"],
       [SALEOR_DOMAIN_HEADER, domain],
