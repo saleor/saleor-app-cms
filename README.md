@@ -1,8 +1,14 @@
-# saleor-app-cms-hub
+![Saleor App CMS Hub](https://user-images.githubusercontent.com/249912/71523206-4e45f800-28c8-11ea-84ba-345a9bfc998a.png)
 
-## What is `saleor-app-cms-hub`?
+<div align="center">
+  <h1>Saleor App CMS Hub</h1>
+</div>
 
-`saleor-app-cms-hub` is a Saleor app that exports products from Saleor to CMSes.
+# Overview
+
+## What is it?
+
+CMS Hub is a Saleor app that exports products from Saleor to a number of popular CMSes.
 
 Currently supported CMSes are:
 
@@ -11,6 +17,16 @@ Currently supported CMSes are:
 
 ## How does it work?
 
-1. `saleor-app-cms-hub` listens to Saleor product events through Webhooks.
-2. When an event is triggered, we extract the product data from it and pass it to the CMS Client.
-3. CMS Client transforms the data to the desired format and sends it to the CMS.
+1. `saleor-app-cms-hub` listens to Saleor product events through [webhooks](https://docs.saleor.io/docs/3.x/developer/extending/apps/asynchronous-webhooks).
+2. When an event is triggered, we extract the product data and pass it to the CMS Client.
+3. CMS Client checks what CMS you picked, transforms the data to the format the CMS expects, and sends it over.
+
+## How to use it?
+1. Install the application in your Dashboard.
+2. Go to _Catalog -> CMS Hub_.
+3. Choose the CMS. **Currently, we can only support one CMS at the time.**
+4. Go to `.env.example` and provide the required tokens. They are different for each CMS.
+
+## What is coming up?
+- Managing the tokens from the Dashboard view
+- Support for multiple CMSes at once
