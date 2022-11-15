@@ -30,3 +30,6 @@ Currently supported CMSes are:
 ## What is coming up?
 - Managing the tokens from the Dashboard view
 - Support for multiple CMSes at once
+
+## How can I contribute?
+See [CONTRIBUTING.md](./CONTRIBUTING.md).
