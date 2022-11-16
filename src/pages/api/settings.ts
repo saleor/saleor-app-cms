@@ -35,9 +35,9 @@ export default async function handler(
     return res.status(401).json({ success: false });
   }
 
-  const client = createClient(`https://${saleorDomain}/graphql/`, async () =>
-    Promise.resolve({ token: authData.token })
-  );
+  const client = createClient(`https://${saleorDomain}/graphql/`, async () => ({
+    token: authData.token,
+  }));
 
   const settings = createSettingsManager(client);
 

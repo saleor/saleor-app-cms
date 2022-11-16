@@ -1,7 +1,10 @@
-import { AppManifest } from "@saleor/app-sdk";
+import { AppManifest } from "@saleor/app-sdk/types";
 import { createManifestHandler } from "@saleor/app-sdk/handlers/next";
 
 import packageJson from "../../../package.json";
+import { productUpdatedWebhook } from "./webhooks/product-updated";
+import { productCreatedWebhook } from "./webhooks/product-created";
+import { productDeletedWebhook } from "./webhooks/product-deleted";
 
 export default createManifestHandler({
   async manifestFactory(context) {
@@ -13,11 +16,9 @@ export default createManifestHandler({
       id: "saleor.app",
       version: packageJson.version,
       webhooks: [
-        /**
-         * Configure webhooks here. They will be created in Saleor during installation
-         * Read more
-         * https://docs.saleor.io/docs/3.x/developer/api-reference/objects/webhook
-         */
+        productUpdatedWebhook.getWebhookManifest(context.appBaseUrl),
+        productCreatedWebhook.getWebhookManifest(context.appBaseUrl),
+        productDeletedWebhook.getWebhookManifest(context.appBaseUrl),
       ],
       extensions: [
         {

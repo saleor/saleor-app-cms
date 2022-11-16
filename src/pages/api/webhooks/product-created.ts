@@ -1,96 +1,87 @@
-import { SALEOR_DOMAIN_HEADER } from "@saleor/app-sdk";
+import { NextWebhookApiHandler, SaleorAsyncWebhook } from "@saleor/app-sdk/handlers/next";
+import { gql } from "urql";
 import {
-  withRegisteredSaleorDomainHeader,
-  withSaleorApp,
-  withSaleorEventMatch,
-  withWebhookSignatureVerified,
-} from "@saleor/app-sdk/middleware";
-// todo: get rid of retes
-import { Handler } from "retes";
-import { toNextHandler } from "retes/adapter";
-import { Response } from "retes/response";
-import { GetProductDocument, UpdateMetadataDocument } from "../../../../generated/graphql";
+  ProductCreatedWebhookPayloadFragment,
+  UpdateMetadataDocument,
+} from "../../../../generated/graphql";
 import { saleorApp } from "../../../../saleor-app";
-import { createCmsClient } from "../../../api/cms";
-
+import { CMS_ID_KEY, createCmsClient } from "../../../lib/cms";
 import { createClient } from "../../../lib/graphql";
-
-const CMS_ID_KEY = "cmsId";
-
-type ProductCreated = unknown & { name: string; id: string };
-type ProductCreatedParams = Record<string, ProductCreated>;
-
-const handler: Handler<ProductCreatedParams> = async (request) => {
-  const products = Object.values(request.params);
-  const saleorDomain = request.headers[SALEOR_DOMAIN_HEADER] as string;
-  const authData = await saleorApp.apl.get(saleorDomain);
-
-  if (!authData) {
-    return Response.Forbidden({
-      error: `Could not find auth data for the domain ${saleorDomain}. Check if the app is installed.`,
-    });
-  }
-
-  const token = authData.token;
-
-  const client = createClient(`https://${saleorDomain}/graphql/`, async () =>
-    Promise.resolve({ token })
-  );
-
-  for (const product of products) {
-    try {
-      const cmsClient = await createCmsClient({ domain: saleorDomain, token, host: request.host });
-
-      if (cmsClient) {
-        const getProductResponse = await client
-          .query(GetProductDocument, {
-            id: product.id,
-          })
-          .toPromise();
-
-        const fullProduct = getProductResponse?.data?.product;
-
-        if (fullProduct) {
-          const updateProductResponse = await cmsClient?.products.create({
-            input: {
-              id: product.id,
-              name: product.name,
-              slug: fullProduct?.slug,
-              image: fullProduct.media?.[0]?.url ?? "",
-            },
-          });
-
-          if (updateProductResponse?.ok) {
-            await client
-              .mutation(UpdateMetadataDocument, {
-                input: [{ key: CMS_ID_KEY, value: updateProductResponse.data.id }],
-                id: product.id,
-              })
-              .toPromise();
-          }
-        }
-      }
-    } catch (error) {
-      console.log(error);
-      return Response.InternalServerError({
-        error: "Something went wrong",
-      });
-    }
-  }
-
-  return Response.OK({ ok: true });
-};
-
-export default toNextHandler([
-  withSaleorApp(saleorApp),
-  withRegisteredSaleorDomainHeader,
-  withSaleorEventMatch("product_created"),
-  withWebhookSignatureVerified(),
-  handler,
-]);
 
 export const config = {
   api: {
     bodyParser: false,
   },
 };
+
+export const ProductCreatedWebhookPayload = gql`
+  fragment ProductCreatedWebhookPayload on ProductCreated {
+    product {
+      id
+      name
+      slug
+      media {
+        url
+      }
+    }
+  }
+`;
+
+export const ProductCreatedSubscription = gql`
+  ${ProductCreatedWebhookPayload}
+  subscription ProductCreated {
+    event {
+      ...ProductCreatedWebhookPayload
+    }
+  }
+`;
+
+export const productCreatedWebhook = new SaleorAsyncWebhook<ProductCreatedWebhookPayloadFragment>({
+  name: "Cms-hub product created webhook",
+  webhookPath: "api/webhooks/product-created",
+  asyncEvent: "PRODUCT_CREATED",
+  apl: saleorApp.apl,
+  subscriptionQueryAst: ProductCreatedSubscription,
+});
+
+export const handler: NextWebhookApiHandler<ProductCreatedWebhookPayloadFragment> = async (
+  req,
+  res,
+  context
+) => {
+  const { product } = context.payload;
+  const { domain, token } = context.authData;
+
+  const cmsClient = await createCmsClient(context);
+  const apiClient = createClient(`https://${domain}/graphql/`, async () => ({ token }));
+
+  console.log("PRODUCT_CREATED triggered");
+
+  if (product && cmsClient && apiClient) {
+    try {
+      const createProductResponse = await cmsClient?.products.create({
+        input: {
+          id: product.id,
+          name: product.name,
+          slug: product?.slug,
+          image: product.media?.[0]?.url ?? "",
+        },
+      });
+
+      if (createProductResponse?.ok) {
+        await apiClient
+          .mutation(UpdateMetadataDocument, {
+            input: [{ key: CMS_ID_KEY, value: createProductResponse.data.id }],
+            id: product.id,
+          })
+          .toPromise();
+        return res.status(200).end();
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ error });
+    }
+  }
+};
+
+export default productCreatedWebhook.createHandler(handler);
