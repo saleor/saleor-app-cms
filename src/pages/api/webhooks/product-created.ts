@@ -53,9 +53,7 @@ export const handler: NextWebhookApiHandler<ProductCreatedWebhookPayloadFragment
   const { domain, token } = context.authData;
 
   const cmsClient = await createCmsClient(context);
-  const apiClient = createClient(`https://${domain}/graphql/`, async () =>
-    Promise.resolve({ token })
-  );
+  const apiClient = createClient(`https://${domain}/graphql/`, async () => ({ token }));
 
   console.log("PRODUCT_CREATED triggered");
 
