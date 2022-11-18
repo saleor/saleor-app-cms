@@ -6,7 +6,8 @@ import {
   NEXT_PUBLIC_CONTENTFUL_ENVIRONMENT,
   NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
 } from "../../../constants";
-import { CmsClient, CreateProductResponse, ProductInput } from "../types";
+import { createCmsAdapter } from "../client";
+import { CreateProductResponse, ProductInput } from "../types";
 
 const contentfulBaseUrl = "https://api.contentful.com";
 const contentfulDefaultLocale = "en-US";
@@ -78,7 +79,7 @@ const transformCreateProductResponse = (response: ContentfulResponse): CreatePro
 const getEntryEndpoint = (resourceID: string): string =>
   `/spaces/${contentfulSpaceID}/environments/${contentfulEnvironment}/entries/${resourceID}`;
 
-export const contentfulClient: CmsClient = {
+export const contentfulClient = createCmsAdapter({
   products: {
     create: async (params) => {
       // Contentful API does not auto generate resource ID during creation, it has to be provided.
@@ -115,4 +116,4 @@ export const contentfulClient: CmsClient = {
       return contentfulFetch(endpoint, { method: "DELETE" });
     },
   },
-};
+});

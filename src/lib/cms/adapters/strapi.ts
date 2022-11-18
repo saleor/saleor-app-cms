@@ -1,5 +1,6 @@
 import { NEXT_PUBLIC_STRAPI_API_URL, NEXT_PUBLIC_STRAPI_AUTH_TOKEN } from "../../../constants";
-import { CmsClient, CreateProductResponse, ProductInput } from "../types";
+import { createCmsAdapter } from "../client";
+import { CreateProductResponse, ProductInput } from "../types";
 
 const strapiBaseUrl = NEXT_PUBLIC_STRAPI_API_URL;
 const strapiToken = NEXT_PUBLIC_STRAPI_AUTH_TOKEN;
@@ -67,7 +68,7 @@ const transformCreateProductResponse = (response: StrapiResponse): CreateProduct
   };
 };
 
-export const strapiClient: CmsClient = {
+export const strapiClient = createCmsAdapter({
   products: {
     getAll: () => {
       return strapiFetch("/products");
@@ -94,4 +95,4 @@ export const strapiClient: CmsClient = {
       return strapiFetch(`/products/${id}`, { method: "DELETE" });
     },
   },
-};
+});

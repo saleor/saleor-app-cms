@@ -2,9 +2,12 @@ import { SALEOR_AUTHORIZATION_BEARER_HEADER, SALEOR_DOMAIN_HEADER } from "@saleo
 import { NextWebhookApiHandler } from "@saleor/app-sdk/handlers/next";
 import { SettingsApiResponse } from "../../pages/api/settings";
 import { contentfulClient, strapiClient } from "./adapters";
-import { CMSProvider } from "./adapters/config";
+import { CMSProvider } from "./config";
+import { CmsClient } from "./types";
 
 type WebhookContext = Parameters<NextWebhookApiHandler>["2"];
+
+export const createCmsAdapter = (adapter: CmsClient) => adapter;
 
 // todo: add support for multiple adapters at once
 
