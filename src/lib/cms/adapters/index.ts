@@ -1,2 +1,2 @@
-export * from "./contentful";
-export * from "./strapi";
+export { contentfulClient } from "./contentful";
+export { strapiClient } from "./strapi";
