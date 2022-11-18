@@ -4,7 +4,7 @@
 
 CMS Hub connects Saleor to a variety of CMSes. Each integration requires **an adapter** that implements an interface for the supported operations.
 
-Currently, CMS Hub implements only the operations on **products** (exporting them from Saleor to CMS). That means you need to implement creating, updating, and deleting a product in the CMS you are integrating with.
+Currently, CMS Hub features only the operations on **products** (specifically, exporting them from Saleor to CMS). That means you need to implement creating, updating, and deleting a product in the CMS you are integrating with.
 
 CMS Hub will:
 
