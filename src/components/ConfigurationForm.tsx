@@ -4,11 +4,7 @@ import { SALEOR_AUTHORIZATION_BEARER_HEADER, SALEOR_DOMAIN_HEADER } from "@saleo
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import {
-  CMSProvider,
-  CMSProviderConfig,
-  defaultCmsProvidersFields,
-} from "../lib/cms/adapters/config";
+import { CMSProvider, CMSProviderConfig, defaultCmsProvidersFields } from "../lib/cms/config";
 import { SettingsApiResponse, SettingsUpdateApiRequest } from "../pages/api/settings";
 
 type FormValues = CMSProviderConfig;
