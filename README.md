@@ -8,7 +8,7 @@
 
 ## What is it?
 
-CMS Hub is a Saleor app that exports products from Saleor to a number of popular CMSes.
+CMS Hub is a Saleor app that exports products from Saleor to several popular CMSes.
 
 Currently supported CMSes are:
 
@@ -22,14 +22,17 @@ Currently supported CMSes are:
 3. CMS Client checks what CMS you picked, transforms the data to the format the CMS expects, and sends it over.
 
 ## How to use it?
+
 1. Install the application in your Dashboard.
 2. Go to _Catalog -> CMS Hub_.
-3. Choose the CMS. **Currently, we can only support one CMS at the time.**
+3. Choose the CMS. **Currently, we can only support one CMS at a time.**
 4. Go to `.env.example` and provide the required tokens. They are different for each CMS.
 
 ## What is coming up?
+
 - Managing the tokens from the Dashboard view
 - Support for multiple CMSes at once
 
 ## How can I contribute?
+
 See [CONTRIBUTING.md](./CONTRIBUTING.md).
