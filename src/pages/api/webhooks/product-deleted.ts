@@ -53,7 +53,7 @@ export const handler: NextWebhookApiHandler<ProductDeletedWebhookPayloadFragment
 
     if (cmsId) {
       try {
-        await cmsClient.products.delete({
+        await cmsClient.deleteProduct({
           id: cmsId,
         });
         return res.status(200).end();

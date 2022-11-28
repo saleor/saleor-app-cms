@@ -59,10 +59,10 @@ export const handler: NextWebhookApiHandler<ProductUpdatedWebhookPayloadFragment
 
     if (cmsId && cmsClient) {
       try {
-        await cmsClient.products.update({
+        await cmsClient.updateProduct({
           // todo: change params of product methods because of below:
           // * In some CMSes, cmsId may be productId. Perhaps it's better to just pass everything as one big object
-          // * and decide on the id on the adapter level.
+          // * and decide on the id on the provider level.
           id: cmsId,
           input: {
             slug: product.slug,

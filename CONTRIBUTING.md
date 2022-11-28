@@ -2,29 +2,29 @@
 
 ## Overview
 
-CMS Hub connects Saleor to a variety of CMSes. Each integration requires **an adapter** that implements an interface for the supported operations.
+CMS Hub connects Saleor to a variety of CMSes. Each integration requires **an provider** that implements an interface for the supported operations.
 
 Currently, CMS Hub features only the operations on **products** (specifically, exporting them from Saleor to CMS). That means you need to implement creating, updating, and deleting a product in the CMS you are integrating with.
 
 CMS Hub will:
 
 - execute the actions on the right webhook
-- extract the product data and pass it to an adapter
+- extract the product data and pass it to an provider
 - provide some integration logic (e.g. add the product id from the CMS to the product metadata)
 
 ## Development
 
 If you want to submit a PR with another CMS, here is what you have to do:
 
-1. Go to `/src/lib/cms/adapters`.
+1. Go to `/src/lib/cms/providers`.
 2. Create a file following the convention `[cmsName].ts`, e.g.: `payload.ts`.
 3. In your created file, import the following:
 
 ```
-import { createCmsAdapter } from "../client";
+import { createCmsProvider } from "../client";
 ```
 
-This function allows you to declare an adapter for your CMS. It will make sure you implement all the required methods.
+This function allows you to declare an provider for your CMS. It will make sure you implement all the required methods.
 
 Each method accepts a payload (sent from the webhook) and should return a promise. CMS Hub does not verify the returned value.
 
@@ -39,23 +39,23 @@ Each method accepts a payload (sent from the webhook) and should return a promis
 >
 > We need it to synchronise the Saleor product with the CMS product. The product id returned from the CMS is used to update the product metadata in Saleor.
 
-4. In the method body, implement adapter-specific logic.
+4. In the method body, implement provider-specific logic.
 
 ```
-const payloadClient = createCmsAdapter({
+const payloadClient = createCmsProvider({
   products: {
     create: async (params) => { ...
 ```
 
 The CMS you are integrating with may require sending the data in a specific format. All the transformations (and other operations) should happen here.
 
-5. Add the `export` statement to `/src/lib/cms/adapters/index.ts`:
+5. Add the `export` statement to `/src/lib/cms/providers/index.ts`:
 
 ```
 export { payloadClient } from "./payload";
 ```
 
-6. Import the adapter and add it to the `switch` statement in `/src/lib/cms/client.ts`:
+6. Import the provider and add it to the `switch` statement in `/src/lib/cms/client.ts`:
 
 ```
   switch (provider) {
@@ -66,7 +66,7 @@ export { payloadClient } from "./payload";
   }
 ```
 
-7. Create a type for your adapter's config in `src/lib/cms/config.ts`. It should utilize the `MakeConfig` util that accepts an union of token names:
+7. Create a type for your provider's config in `src/lib/cms/config.ts`. It should utilize the `MakeConfig` util that accepts an union of token names:
 
 ```
 type PayloadConfig = MakeConfig<"token" | "anotherToken>
@@ -74,13 +74,13 @@ type PayloadConfig = MakeConfig<"token" | "anotherToken>
 
 > **Important!**
 >
-> Managing the tokens from the UI doesn't work yet. However, if you add the type as described, the feature will work for your adapter, once we add it.
+> Managing the tokens from the UI doesn't work yet. However, if you add the type as described, the feature will work for your provider, once we add it.
 
 Then add your created type to the `CMSProviderConfig`, as well as update the `defaultCmsProviderConfig` variable.
 
 > 🙏 This part will be improved in the near future, don't worry.
 
-8. Go to `/src/components/ConfigurationForm.tsx` and update the `schema` with validation for your adapter (currently only supports the `enabled` field).
+8. Go to `/src/components/ConfigurationForm.tsx` and update the `schema` with validation for your provider (currently only supports the `enabled` field).
 
 ---
 
