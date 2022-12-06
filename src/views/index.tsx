@@ -1,7 +1,9 @@
-import { Configuration } from './configuration'
+import { Configuration } from "./configuration";
 
 export const Views = () => {
-    return (
-        <Configuration />
-    )
-}
+  return (
+    <main>
+      <Configuration />
+    </main>
+  );
+};

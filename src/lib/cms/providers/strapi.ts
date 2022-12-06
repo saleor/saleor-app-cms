@@ -1,17 +1,29 @@
-import { NEXT_PUBLIC_STRAPI_API_URL, NEXT_PUBLIC_STRAPI_AUTH_TOKEN } from "../../../constants";
-import { createCmsAdapter } from "../client";
-import { CreateProductResponse, ProductInput } from "../types";
+import { z } from "zod";
+import {
+  CmsOperations,
+  CreateOperations,
+  CreateProductResponse,
+  CreateProviderConfig,
+  ProductInput,
+} from "../types";
+import { createProvider } from "./create";
 
-const strapiBaseUrl = NEXT_PUBLIC_STRAPI_API_URL;
-const strapiToken = NEXT_PUBLIC_STRAPI_AUTH_TOKEN;
+type StrapiConfig = CreateProviderConfig<"strapi">;
 
-const strapiFetch = (endpoint: string, options?: RequestInit) => {
-  return fetch(`${strapiBaseUrl}${endpoint}`, {
+const strapiConfigSchema: z.ZodType<StrapiConfig> = z.object({
+  token: z.string(),
+  baseUrl: z.string(),
+  enabled: z.boolean(),
+});
+
+const strapiFetch = (endpoint: string, config: StrapiConfig, options?: RequestInit) => {
+  const { baseUrl, token } = config;
+  return fetch(`${baseUrl}${endpoint}`, {
     ...options,
     headers: {
       ...options?.headers,
       "Content-Type": "application/json",
-      Authorization: `Bearer ${strapiToken}`,
+      Authorization: `Bearer ${token}`,
     },
   });
 };
@@ -68,17 +80,13 @@ const transformCreateProductResponse = (response: StrapiResponse): CreateProduct
   };
 };
 
-export const strapiClient = createCmsAdapter({
-  products: {
-    getAll: () => {
-      return strapiFetch("/products");
-    },
-    get: ({ id }) => {
-      return strapiFetch(`/products/${id}`);
-    },
-    create: async (params) => {
+type CreateStrapiOperations = CreateOperations<StrapiConfig>;
+
+export const strapiOperations: CreateStrapiOperations = (config): CmsOperations => {
+  return {
+    createProduct: async (params) => {
       const body = transformInputToBody(params);
-      const response = await strapiFetch("/products", {
+      const response = await strapiFetch("/products", config, {
         method: "POST",
         body: JSON.stringify(body),
       });
@@ -87,12 +95,14 @@ export const strapiClient = createCmsAdapter({
 
       return transformCreateProductResponse(result);
     },
-    update: ({ id, input }) => {
+    updateProduct: ({ id, input }) => {
       const body = transformInputToBody({ input });
-      return strapiFetch(`/products/${id}`, { method: "PUT", body: JSON.stringify(body) });
+      return strapiFetch(`/products/${id}`, config, { method: "PUT", body: JSON.stringify(body) });
     },
-    delete: ({ id }) => {
-      return strapiFetch(`/products/${id}`, { method: "DELETE" });
+    deleteProduct: ({ id }) => {
+      return strapiFetch(`/products/${id}`, config, { method: "DELETE" });
     },
-  },
-});
+  };
+};
+
+export default createProvider(strapiOperations, strapiConfigSchema);

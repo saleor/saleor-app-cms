@@ -52,14 +52,14 @@ export const handler: NextWebhookApiHandler<ProductCreatedWebhookPayloadFragment
   const { product } = context.payload;
   const { domain, token } = context.authData;
 
-  const cmsClient = await createCmsClient(context);
-  const apiClient = createClient(`https://${domain}/graphql/`, async () => ({ token }));
+  try {
+    const cmsClient = await createCmsClient(context);
+    const apiClient = createClient(`https://${domain}/graphql/`, async () => ({ token }));
 
-  console.log("PRODUCT_CREATED triggered");
+    console.log("PRODUCT_CREATED triggered");
 
-  if (product && cmsClient && apiClient) {
-    try {
-      const createProductResponse = await cmsClient?.products.create({
+    if (product && cmsClient && apiClient) {
+      const createProductResponse = await cmsClient?.createProduct({
         input: {
           id: product.id,
           name: product.name,
@@ -77,10 +77,10 @@ export const handler: NextWebhookApiHandler<ProductCreatedWebhookPayloadFragment
           .toPromise();
         return res.status(200).end();
       }
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json({ error });
     }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error });
   }
 };
 

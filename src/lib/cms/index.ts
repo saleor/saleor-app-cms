@@ -1,4 +1,6 @@
 export * from "./client";
-export * from "./const";
+export * from "./providers";
+export { default as cmsProviders } from "./providers";
 export * from "./utils";
-export * from "./adapters";
+
+export const CMS_ID_KEY = "cmsId";
