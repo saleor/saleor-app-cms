@@ -21,11 +21,8 @@ const contentfulConfigSchema: z.ZodType<ContentfulConfig> = z.object({
   enabled: z.boolean(),
 });
 
-const contentfulFetch = (
-  tokens: { baseUrl: string; token: string; endpoint: string },
-  options?: RequestInit
-) => {
-  const { baseUrl, token, endpoint } = tokens;
+const contentfulFetch = (endpoint: string, config: ContentfulConfig, options?: RequestInit) => {
+  const { baseUrl, token } = config;
 
   return fetch(`${baseUrl}${endpoint}`, {
     ...options,
@@ -115,16 +112,13 @@ const contentfulOperations: CreateOperations<ContentfulConfig> = (config) => {
         environment,
         spaceId,
       });
-      const response = await contentfulFetch(
-        { endpoint, baseUrl, token },
-        {
-          method: "PUT",
-          body: JSON.stringify(body),
-          headers: {
-            "X-Contentful-Content-Type": contentId,
-          },
-        }
-      );
+      const response = await contentfulFetch(endpoint, config, {
+        method: "PUT",
+        body: JSON.stringify(body),
+        headers: {
+          "X-Contentful-Content-Type": contentId,
+        },
+      });
       const result = await response.json();
       return transformCreateProductResponse(result);
     },
@@ -135,27 +129,21 @@ const contentfulOperations: CreateOperations<ContentfulConfig> = (config) => {
         environment,
         spaceId,
       });
-      const getEntryResponse = await contentfulFetch(
-        { endpoint, baseUrl, token },
-        { method: "GET" }
-      );
+      const getEntryResponse = await contentfulFetch(endpoint, config, { method: "GET" });
       const entry = await getEntryResponse.json();
-      const response = await contentfulFetch(
-        { endpoint, baseUrl, token },
-        {
-          method: "PUT",
-          body: JSON.stringify(body),
-          headers: {
-            "X-Contentful-Version": entry.sys.version,
-          },
-        }
-      );
+      const response = await contentfulFetch(endpoint, config, {
+        method: "PUT",
+        body: JSON.stringify(body),
+        headers: {
+          "X-Contentful-Version": entry.sys.version,
+        },
+      });
       const result = await response.json();
       return result;
     },
     deleteProduct: ({ id }) => {
       const endpoint = getEntryEndpoint({ resourceId: id, environment, spaceId });
-      return contentfulFetch({ endpoint, baseUrl, token }, { method: "DELETE" });
+      return contentfulFetch(endpoint, config, { method: "DELETE" });
     },
   };
 };
