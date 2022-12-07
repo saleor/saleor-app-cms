@@ -20,15 +20,7 @@ export default createManifestHandler({
         productCreatedWebhook.getWebhookManifest(context.appBaseUrl),
         productDeletedWebhook.getWebhookManifest(context.appBaseUrl),
       ],
-      extensions: [
-        {
-          label: "CMS Hub",
-          mount: "NAVIGATION_CATALOG",
-          target: "APP_PAGE",
-          permissions: ["MANAGE_PRODUCTS"],
-          url: "/hub",
-        },
-      ],
+      extensions: [],
     };
 
     return manifest;
