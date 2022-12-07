@@ -1,9 +1,11 @@
 import { Configuration } from "./configuration";
 
-export const Views = () => {
+const Views = () => {
   return (
     <main>
       <Configuration />
     </main>
   );
 };
+
+export default Views;
