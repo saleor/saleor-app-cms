@@ -11,7 +11,7 @@ import {
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
 import { Button } from "@saleor/macaw-ui";
 import React from "react";
-import { Path, useForm } from "react-hook-form";
+import { Controller, Path, useForm } from "react-hook-form";
 import { CMSProvider, cmsProviders, providersConfig, ProvidersSchema } from "../lib/cms";
 
 type ConfigurationFormProps<TProvider extends CMSProvider> = {
@@ -28,12 +28,13 @@ export const ConfigurationForm = <TProvider extends CMSProvider>({
   isLoading,
 }: ConfigurationFormProps<TProvider>) => {
   const schema = cmsProviders[provider].schema;
-  const { register, handleSubmit, reset } = useForm<ProvidersSchema[TProvider]>({
+  const { register, handleSubmit, reset, control } = useForm<ProvidersSchema[TProvider]>({
     resolver: zodResolver(schema),
   });
 
   React.useEffect(() => {
     if (defaultValues) {
+      console.log(defaultValues);
       reset(defaultValues);
     }
   }, [defaultValues, reset]);
@@ -54,8 +55,20 @@ export const ConfigurationForm = <TProvider extends CMSProvider>({
           <Grid container spacing={1}>
             <Grid item xs={12}>
               <FormControlLabel
+                control={
+                  <Controller
+                    name={"enabled" as Path<ProvidersSchema[TProvider]>}
+                    control={control}
+                    render={({ field: props }) => (
+                      <Checkbox
+                        {...props}
+                        checked={props.value === "true" || props.value === true}
+                        onChange={(e) => props.onChange(e.target.checked)}
+                      />
+                    )}
+                  />
+                }
                 label={"On / off"}
-                control={<Checkbox {...register("enabled" as Path<ProvidersSchema[TProvider]>)} />}
               />
             </Grid>
             {fields.map((tokenName) => (
