@@ -1,5 +1,7 @@
+import { Box, CircularProgress, FormHelperText, Grid, Typography } from "@material-ui/core";
 import { useAppBridge } from "@saleor/app-sdk/app-bridge";
 import { SALEOR_AUTHORIZATION_BEARER_HEADER, SALEOR_DOMAIN_HEADER } from "@saleor/app-sdk/const";
+import { useTheme } from "@saleor/macaw-ui";
 import React from "react";
 import { ConfigurationForm } from "../components/ConfigurationForm";
 import {
@@ -79,21 +81,30 @@ export const Configuration = () => {
     }
   };
 
+  const theme = useTheme();
+
   return (
     <section>
-      <h1>Configuration</h1>
-      {isFetching && <span>Loading...</span>}
-      {error && <span style={{ color: "red" }}>{error}</span>}
-      {config &&
-        Object.entries(config).map(([providerName, values]) => (
-          <ConfigurationForm
-            key={providerName}
-            provider={providerName as CMSProvider}
-            defaultValues={values}
-            onSubmit={saveSettings}
-            isLoading={isSaving}
-          />
-        ))}
+      <Box mb={2}>
+        <Typography variant="h1">Configuration</Typography>
+      </Box>
+      {isFetching && <CircularProgress />}
+      {error && <FormHelperText error>{error}</FormHelperText>}
+      <Box maxWidth={theme.breakpoints.values.sm}>
+        <Grid container spacing={1}>
+          {config &&
+            Object.entries(config).map(([providerName, values]) => (
+              <Grid item xs={12} key={providerName}>
+                <ConfigurationForm
+                  provider={providerName as CMSProvider}
+                  defaultValues={values}
+                  onSubmit={saveSettings}
+                  isLoading={isSaving}
+                />
+              </Grid>
+            ))}
+        </Grid>
+      </Box>
     </section>
   );
 };
