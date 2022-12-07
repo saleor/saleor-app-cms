@@ -3,7 +3,7 @@ import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 
-const ClientContent = dynamic(() => import("../DashboardActions"), {
+const ClientContent = dynamic(() => import("../views"), {
   ssr: false,
 });
 
@@ -13,45 +13,14 @@ const ClientContent = dynamic(() => import("../DashboardActions"), {
  */
 const IndexPage: NextPage = () => {
   const { appBridgeState } = useAppBridge();
-  const [mounted, setMounted] = useState(false)
+  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => { setMounted(true) }, [])
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <div>
-      <h1>Welcome to Saleor App Template (Next.js) 🚀</h1>
-      <p>
-        This is a boilerplate you can start with, to create an app
-        connected to Saleor
-      </p>
-      <h2>Resources</h2>
-      <ul>
-        <li>
-          <a target="_blank" rel="noreferrer" href="https://github.com/saleor/app-examples">
-            App Examples repository
-          </a>
-        </li>
-        <li>
-          <a target="_blank" rel="noreferrer" href="https://github.com/saleor/saleor-app-sdk">
-            Saleor App SDK
-          </a>
-        </li>
-        <li>
-          <a
-            target="_blank"
-            href="https://docs.saleor.io/docs/3.x/developer/extending/apps/key-concepts"
-            rel="noreferrer"
-          >
-            Apps documentation
-          </a>
-        </li>
-        <li>
-          <a target="_blank" href="https://github.com/saleor/saleor-cli" rel="noreferrer">
-            Saleor CLI
-          </a>
-        </li>
-      </ul>
-
       {appBridgeState?.ready && mounted ? (
         <ClientContent />
       ) : (
