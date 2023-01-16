@@ -13,8 +13,8 @@ specifiers:
   '@material-ui/core': ^4.12.4
   '@material-ui/icons': ^4.11.3
   '@material-ui/lab': 4.0.0-alpha.61
-  '@saleor/app-sdk': 0.24.0-0
-  '@saleor/macaw-ui': ^0.6.5
+  '@saleor/app-sdk': 0.24.0
+  '@saleor/macaw-ui': ^0.6.7
   '@types/node': ^18.8.1
   '@types/react': ^18.0.21
   '@types/react-dom': ^18.0.6
@@ -40,8 +40,8 @@ dependencies:
   '@material-ui/core': 4.12.4_rj7ozvcq3uehdlnj3cbwzbi5ce
   '@material-ui/icons': 4.11.3_3mlwvtnnvz4efep55wa5m5dc4e
   '@material-ui/lab': 4.0.0-alpha.61_3mlwvtnnvz4efep55wa5m5dc4e
-  '@saleor/app-sdk': 0.24.0-0_azq6kxkn3od7qdylwkyksrwopy
-  '@saleor/macaw-ui': 0.6.5_k2kuy4f2rkqfztjzphbs3himfi
+  '@saleor/app-sdk': 0.24.0_azq6kxkn3od7qdylwkyksrwopy
+  '@saleor/macaw-ui': 0.6.7_k2kuy4f2rkqfztjzphbs3himfi
   '@urql/exchange-auth': 1.0.0_graphql@16.6.0
   graphql: 16.6.0
   graphql-tag: 2.12.6_graphql@16.6.0
@@ -1631,8 +1631,8 @@ packages:
     resolution: {integrity: sha512-sXo/qW2/pAcmT43VoRKOJbDOfV3cYpq3szSVfIThQXNt+E4DfKj361vaAt3c88U5tPUxzEswam7GW48PJqtKAg==}
     dev: true
 
-  /@saleor/app-sdk/0.24.0-0_azq6kxkn3od7qdylwkyksrwopy:
-    resolution: {integrity: sha512-/jGzwB/9V6tu2VywEFMzfLx/GM0Yyy1uUF0AyZo1/kaw/7odQ3lyyzzc92LDQzKXbvfEZZdrxfmP7jGxiVEpug==}
+  /@saleor/app-sdk/0.24.0_azq6kxkn3od7qdylwkyksrwopy:
+    resolution: {integrity: sha512-vrWRcrB1D2EA0d/yzPFf+npfAOukIqBm6FzQhWDsHI1v+ZPjaZkjmiqMtjWvGrhRuRKtEJ9YHsAQYjNOhc1Pvg==}
     peerDependencies:
       next: '>=12'
       react: '>=17'
@@ -1654,8 +1654,8 @@ packages:
       - supports-color
     dev: false
 
-  /@saleor/macaw-ui/0.6.5_k2kuy4f2rkqfztjzphbs3himfi:
-    resolution: {integrity: sha512-lAhSjSKgLuILoiMRRITZn3dFMMQPYGjHZClSDvsmvOCZSJ1X3dqWFw7PLNp+r3IapZ9R6CT9ZBe7uYZ6l5aDMA==}
+  /@saleor/macaw-ui/0.6.7_k2kuy4f2rkqfztjzphbs3himfi:
+    resolution: {integrity: sha512-HRa8c4M+siOltopPLDusRh/03P7G2FlboFszal5sd2X8HUNZJ4c2BS83gnBMmVgp37kxeZiBVe95Fhjm0PRzbA==}
     engines: {node: '>=10'}
     peerDependencies:
       '@material-ui/core': ^4.11.2
