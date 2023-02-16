@@ -1,4 +1,4 @@
-import { SALEOR_AUTHORIZATION_BEARER_HEADER, SALEOR_DOMAIN_HEADER } from "@saleor/app-sdk/const";
+import { SALEOR_AUTHORIZATION_BEARER_HEADER, SALEOR_API_URL_HEADER } from "@saleor/app-sdk/const";
 import { NextWebhookApiHandler } from "@saleor/app-sdk/handlers/next";
 import { SettingsApiResponse } from "../../pages/api/settings";
 import { providersSchema, cmsProviders } from ".";
@@ -9,12 +9,13 @@ type WebhookContext = Parameters<NextWebhookApiHandler>["2"];
 // todo: add support for multiple providers at once
 export const createCmsClient = async (context: WebhookContext) => {
   const host = context.baseUrl;
-  const domain = context.authData.domain;
+  const saleorApiUrl = context.authData.saleorApiUrl;
   const token = context.authData.token;
+
   const response = await fetch(`${host}/api/settings`, {
     headers: [
       ["content-type", "application/json"],
-      [SALEOR_DOMAIN_HEADER, domain],
+      [SALEOR_API_URL_HEADER, saleorApiUrl],
       [SALEOR_AUTHORIZATION_BEARER_HEADER, token],
     ],
   });

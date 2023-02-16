@@ -1,4 +1,4 @@
-import { SALEOR_DOMAIN_HEADER } from "@saleor/app-sdk/const";
+import { createProtectedHandler, NextProtectedApiHandler } from "@saleor/app-sdk/handlers/next";
 import { SettingsValue } from "@saleor/app-sdk/settings-manager";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -29,19 +29,14 @@ const getFieldValue = (settingsManagerValue: string | undefined, fieldName: stri
   return settingsManagerValue ?? "";
 };
 
-export default async function handler(
+const handler: NextProtectedApiHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse<SettingsApiResponse>
-) {
-  const saleorDomain = req.headers[SALEOR_DOMAIN_HEADER] as string;
-  const authData = await saleorApp.apl.get(saleorDomain);
+  res: NextApiResponse<SettingsApiResponse>,
+  context
+) => {
+  const { authData } = context;
 
-  if (!authData) {
-    console.debug(`Could not find auth data for the domain ${saleorDomain}.`);
-    return res.status(401).json({ success: false });
-  }
-
-  const client = createClient(`https://${saleorDomain}/graphql/`, async () => ({
+  const client = createClient(authData.saleorApiUrl, async () => ({
     token: authData.token,
   }));
 
@@ -85,4 +80,6 @@ export default async function handler(
     }
   }
   return res.status(405).end();
-}
+};
+
+export default createProtectedHandler(handler, saleorApp.apl, ["MANAGE_APPS"]);
