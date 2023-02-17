@@ -7,10 +7,15 @@ import { DatocmsConfig, datocmsConfigSchema } from "../config";
 const datocmsClient = (config: DatocmsConfig, options?: RequestInit) => {
   const { baseUrl, token, environment } = config;
 
+  console.log(config);
+
+  const clientEnvironment = environment ? { environment } : {};
+  const clientBaseUrl = baseUrl ? { baseUrl } : {};
+
   return buildClient({
     apiToken: token,
-    environment,
-    baseUrl,
+    ...clientEnvironment,
+    ...clientBaseUrl,
   });
 };
 

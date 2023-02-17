@@ -1,4 +1,8 @@
-import { SALEOR_AUTHORIZATION_BEARER_HEADER, SALEOR_API_URL_HEADER } from "@saleor/app-sdk/const";
+import {
+  SALEOR_AUTHORIZATION_BEARER_HEADER,
+  SALEOR_API_URL_HEADER,
+  SALEOR_DOMAIN_HEADER,
+} from "@saleor/app-sdk/const";
 import { NextWebhookApiHandler } from "@saleor/app-sdk/handlers/next";
 import { cmsProviders } from ".";
 import { SettingsApiResponse } from "../../pages/api/settings";
@@ -13,6 +17,8 @@ export const createCmsClient = async (context: WebhookContext) => {
   const saleorApiUrl = context.authData.saleorApiUrl;
   const token = context.authData.token;
 
+  console.log(host, saleorApiUrl, token);
+
   const response = await fetch(`${host}/api/settings`, {
     headers: [
       ["content-type", "application/json"],
@@ -21,11 +27,17 @@ export const createCmsClient = async (context: WebhookContext) => {
     ],
   });
 
-  const result = (await response.json()) as SettingsApiResponse;
+  console.log("createCmsClient", response);
+
+  const result = JSON.parse(await response.json()) as SettingsApiResponse;
+
+  console.log("createCmsClient", result);
 
   if (!result.success) {
     throw new Error("The provider was not recognized.");
   }
+
+  console.log("createCmsClient", result.data);
 
   const settings = result.data ?? [];
 
