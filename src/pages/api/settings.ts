@@ -27,15 +27,11 @@ const handler: NextProtectedApiHandler = async (
 ) => {
   const { authData } = context;
 
-  console.log("Settings API called", authData);
-
   const client = createClient(authData.saleorApiUrl, async () => ({
     token: authData.token,
   }));
 
   const settingsManager = createSettingsManager(client);
-
-  console.log("Settings API called", settingsManager);
 
   if (req.method === "GET") {
     const settings = await getSettings(settingsManager);

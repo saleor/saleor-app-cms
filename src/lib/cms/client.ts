@@ -20,8 +20,6 @@ export const createCmsClient = async (context: WebhookContext) => {
   const saleorApiUrl = context.authData.saleorApiUrl;
   const token = context.authData.token;
 
-  console.log(host, saleorApiUrl, token);
-
   const client = createClient(saleorApiUrl, async () => ({
     token: token,
   }));
@@ -29,8 +27,6 @@ export const createCmsClient = async (context: WebhookContext) => {
   const settingsManager = createSettingsManager(client);
 
   const settings = await getSettings(settingsManager);
-
-  console.log("createCmsClient", settings);
 
   const enabledSetting = settings.find(
     (item) => item.key.includes("enabled") && item.value === "true"
