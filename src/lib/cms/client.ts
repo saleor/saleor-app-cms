@@ -6,6 +6,9 @@ import {
 import { NextWebhookApiHandler } from "@saleor/app-sdk/handlers/next";
 import { cmsProviders } from ".";
 import { SettingsApiResponse } from "../../pages/api/settings";
+import { createClient } from "../graphql";
+import { createSettingsManager } from "../metadata";
+import { getSettings } from "../settings";
 import { providersSchema } from "./config";
 import { transformSettingsIntoConfig } from "./utils";
 
@@ -19,27 +22,15 @@ export const createCmsClient = async (context: WebhookContext) => {
 
   console.log(host, saleorApiUrl, token);
 
-  const response = await fetch(`${host}/api/settings`, {
-    headers: [
-      ["content-type", "application/json"],
-      [SALEOR_API_URL_HEADER, saleorApiUrl],
-      [SALEOR_AUTHORIZATION_BEARER_HEADER, token],
-    ],
-  });
+  const client = createClient(saleorApiUrl, async () => ({
+    token: token,
+  }));
 
-  console.log("createCmsClient", response);
+  const settingsManager = createSettingsManager(client);
 
-  const result = JSON.parse(await response.json()) as SettingsApiResponse;
+  const settings = await getSettings(settingsManager);
 
-  console.log("createCmsClient", result);
-
-  if (!result.success) {
-    throw new Error("The provider was not recognized.");
-  }
-
-  console.log("createCmsClient", result.data);
-
-  const settings = result.data ?? [];
+  console.log("createCmsClient", settings);
 
   const enabledSetting = settings.find(
     (item) => item.key.includes("enabled") && item.value === "true"
