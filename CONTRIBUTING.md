@@ -17,10 +17,11 @@ CMS Hub will:
 
 If you want to add a provider for a new CMS, here is what you have to do:
 
-1. Go to `/src/lib/cms/providers/index.ts`.
+1. Go to `/src/lib/cms/config.ts`.
 2. Update the `providersConfig` variable with basic information about your provider: `name`, `label` and `tokens`:
 
-```
+```ts
+// src/lib/cms/config.ts
 export const providersConfig = {
   contentful: {
     ...
@@ -39,25 +40,38 @@ export const providersConfig = {
 > - generate an integration configuration view (see: `src/views/configuration.tsx`)
 > - store & fetch the tokens from the settings API (see: `src/pages/api/settings.ts`)
 
+3. Add configurartion fields to schema:
+
+```ts
+// src/lib/cms/config.ts
+...
+
+export type PayloadConfig = CreateProviderConfig<"payload">; // Generates the type for a config based on the configuration in `src/lib/cms/providers/index.ts`.
+
+...
+
+export const payloadConfigSchema: z.ZodType<PayloadConfig> = z.object({
+  enabled: z.boolean(),
+  ...
+}); // Creates a schema for validating the config using [zod](https://github.com/colinhacks/zod).
+
+export const providersSchemaSet = {
+  ...
+  payload: payloadConfigSchema,
+};
+```
+
 3. Create a file following the naming convention `[cmsName].ts`, e.g.: `src/lib/cms/providers/payload.ts`. This file will contain all the provider logic. You can implement it as you like, as long as it follows the expected format.
 4. Start with importing all the helper functions and types:
 
-```
+```ts
 // src/lib/cms/providers/payload.ts
 import { createProvider } from "./create";
 import {
   CreateOperations,
   CreateProviderConfig,
 } from "../types";
-import { z } from "zod";
-
-type PayloadConfig = CreateProviderConfig<"payload">; // Generates the type for a config based on the configuration in `src/lib/cms/providers/index.ts`.
-
-const payloadConfigSchema: z.ZodType<PayloadConfig> = z.object({
-  enabled: z.boolean(),
-  ...
-}); // Creates a schema for validating the config using [zod](https://github.com/colinhacks/zod).
-
+import { PayloadConfig, payloadConfigSchema } from "../config";
 
 const payloadOperations: CreateOperations<PayloadConfig> = (config) => {
   ...
@@ -69,7 +83,8 @@ export default createProvider(payloadOperations, payloadConfigSchema); // `creat
 
 5. Implement the operations:
 
-```
+```ts
+// src/lib/cms/providers/payload.ts
 ...
 const payloadOperations: CreateOperations<PayloadConfig> = (config) => {
   return {
@@ -84,7 +99,7 @@ Each operation accepts a payload (sent from the webhook) and should return a pro
 >
 > The return type of the `createProduct` method is different than the rest. It must return **a promise** of:
 >
-> ```
+> ```ts
 > { ok: true; data: { id: string } } // the success state
 > | { ok: false; error: string } // the failure state
 > ```
@@ -93,7 +108,7 @@ Each operation accepts a payload (sent from the webhook) and should return a pro
 
 6. Import your provider at the top of the `src/lib/cms/providers/index.ts` file:
 
-```
+```ts
 import contentful from "./contentful";
 ...
 import payload from "./payload";
@@ -103,7 +118,7 @@ import payload from "./payload";
 
 8. Add the `schema` to the `providersSchema` zod object:
 
-```
+```ts
 export const providersSchema = z.object({
   strapi: cmsProviders.strapi.schema,
   ...
@@ -113,7 +128,7 @@ export const providersSchema = z.object({
 
 9. Go to `src/lib/cms/client.ts`. Add a `case` for your provider inside the `switch` statement in `createCmsClient` function:
 
-```
+```ts
 switch (provider) {
   case "strapi": {
     return cmsProviders.strapi.create(config.strapi);
