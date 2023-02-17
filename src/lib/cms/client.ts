@@ -1,7 +1,8 @@
 import { SALEOR_AUTHORIZATION_BEARER_HEADER, SALEOR_API_URL_HEADER } from "@saleor/app-sdk/const";
 import { NextWebhookApiHandler } from "@saleor/app-sdk/handlers/next";
+import { cmsProviders } from ".";
 import { SettingsApiResponse } from "../../pages/api/settings";
-import { providersSchema, cmsProviders } from ".";
+import { providersSchema } from "./config";
 import { transformSettingsIntoConfig } from "./utils";
 
 type WebhookContext = Parameters<NextWebhookApiHandler>["2"];
@@ -49,6 +50,10 @@ export const createCmsClient = async (context: WebhookContext) => {
 
     case "contentful": {
       return cmsProviders.contentful.create(config.contentful);
+    }
+
+    case "datocms": {
+      return cmsProviders.datocms.create(config.datocms);
     }
 
     default: {

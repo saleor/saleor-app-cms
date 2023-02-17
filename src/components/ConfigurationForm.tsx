@@ -12,22 +12,27 @@ import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
 import { Button } from "@saleor/macaw-ui";
 import React from "react";
 import { Controller, Path, useForm } from "react-hook-form";
-import { CMSProvider, cmsProviders, providersConfig, ProvidersSchema } from "../lib/cms";
+import {
+  providersConfig,
+  CMSProviderSchema,
+  providersSchemaSet,
+  ProvidersSchema,
+} from "../lib/cms/config";
 
-type ConfigurationFormProps<TProvider extends CMSProvider> = {
+type ConfigurationFormProps<TProvider extends CMSProviderSchema> = {
   defaultValues: ProvidersSchema[TProvider];
   onSubmit: (values: ProvidersSchema[TProvider], provider: TProvider) => any;
   provider: TProvider;
   isLoading: boolean;
 };
 
-export const ConfigurationForm = <TProvider extends CMSProvider>({
+export const ConfigurationForm = <TProvider extends CMSProviderSchema>({
   defaultValues,
   onSubmit,
   provider,
   isLoading,
 }: ConfigurationFormProps<TProvider>) => {
-  const schema = cmsProviders[provider].schema;
+  const schema = providersSchemaSet[provider];
   const { register, handleSubmit, reset, control } = useForm<ProvidersSchema[TProvider]>({
     resolver: zodResolver(schema),
   });

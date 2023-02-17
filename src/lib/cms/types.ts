@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { providersConfig } from "./providers";
+import { providersConfig } from "./config";
 
 export type ProductInput = Record<string, any> & {
   id: string;
@@ -16,8 +16,8 @@ export type CmsOperations = {
   getAllProducts?: () => Promise<Response>;
   getProduct?: ({ id }: { id: string }) => Promise<Response>;
   createProduct: ({ input }: { input: ProductInput }) => Promise<CreateProductResponse>;
-  updateProduct: ({ id, input }: { id: string; input: ProductInput }) => Promise<Response>;
-  deleteProduct: ({ id }: { id: string }) => Promise<Response>;
+  updateProduct: ({ id, input }: { id: string; input: ProductInput }) => Promise<Response | void>;
+  deleteProduct: ({ id }: { id: string }) => Promise<Response | void>;
 };
 
 export type GetProviderTokens<TProviderName extends keyof typeof providersConfig> =

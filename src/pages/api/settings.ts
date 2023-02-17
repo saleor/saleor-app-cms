@@ -1,13 +1,12 @@
 import { createProtectedHandler, NextProtectedApiHandler } from "@saleor/app-sdk/handlers/next";
-import { SettingsValue } from "@saleor/app-sdk/settings-manager";
+
 import type { NextApiRequest, NextApiResponse } from "next";
 
 import { saleorApp } from "../../../saleor-app";
-import { providersConfig } from "../../lib/cms";
+import { providersConfig } from "../../lib/cms/config";
+import { Setting } from "../../lib/cms/utils";
 import { createClient } from "../../lib/graphql";
 import { createSettingsManager } from "../../lib/metadata";
-
-export type Setting = SettingsValue;
 
 export type SettingsUpdateApiRequest = Setting[];
 
