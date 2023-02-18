@@ -78,6 +78,7 @@ export const datocmsConfigSchema: z.ZodType<DatocmsConfig> = z.object({
   enabled: z.boolean(),
 });
 
+// todo: helper function so you dont have to merge manually
 export const providersSchemaSet = {
   strapi: strapiConfigSchema,
   contentful: contentfulConfigSchema,
@@ -86,7 +87,6 @@ export const providersSchemaSet = {
 
 export type CMSProviderSchema = keyof typeof providersSchemaSet;
 
-// todo: helper function so you dont have to merge manually
 export const providersSchema = z.object(providersSchemaSet);
 
 export type ProvidersSchema = z.infer<typeof providersSchema>;
