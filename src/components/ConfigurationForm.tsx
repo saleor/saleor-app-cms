@@ -76,13 +76,16 @@ export const ConfigurationForm = <TProvider extends CMSProviderSchema>({
                 label={"On / off"}
               />
             </Grid>
-            {fields.map((tokenName) => (
-              <Grid xs={12} item key={tokenName}>
+            {fields.map((token) => (
+              <Grid xs={12} item key={token.name}>
                 <TextField
-                  {...register(tokenName as Path<ProvidersSchema[TProvider]>)}
-                  label={tokenName}
+                  {...register(token.name as Path<ProvidersSchema[TProvider]>, {
+                    required: "required" in token && token.required,
+                  })}
+                  required={"required" in token && token.required}
+                  label={token.label}
                   type="password"
-                  name={tokenName}
+                  name={token.name}
                   fullWidth
                 />
               </Grid>

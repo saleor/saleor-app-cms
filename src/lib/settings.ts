@@ -14,7 +14,7 @@ export const getSettings = async (settingsManager: EncryptedMetadataManager) => 
   const settingsNames = Object.entries(providersConfig).reduce(
     (prev, [providerName, config]) => [
       ...prev,
-      ...config.tokens.map((token) => `${providerName}.${token}`),
+      ...config.tokens.map((token) => `${providerName}.${token.name}`),
     ],
     [...defaultSettingNames] as string[]
   );
