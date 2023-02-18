@@ -91,9 +91,7 @@ export default createProvider(payloadOperations, payloadConfigSchema); // `creat
 ...
 const payloadOperations: CreateOperations<PayloadConfig> = (config) => {
   return {
-    createProduct: async (payload) => ...,
-    updateProduct: async (payload) => ...,
-    deleteProduct: async (payload) => ...,
+    createProduct: async (payload) => ...
   }
 }
 ```
@@ -121,17 +119,7 @@ import payload from "./payload";
 
 7. Add it to the `cmsProviders` variable.
 
-8. Add the `schema` to the `providersSchema` zod object:
-
-```ts
-export const providersSchema = z.object({
-  strapi: cmsProviders.strapi.schema,
-  ...
-  payload: cmsProviders.payload.schema,
-});
-```
-
-9. Go to `src/lib/cms/client.ts`. Add a `case` for your provider inside the `switch` statement in `createCmsClient` function:
+8. Go to `src/lib/cms/client.ts`. Add a `case` for your provider inside the `switch` statement in `createCmsClient` function:
 
 ```ts
 switch (provider) {
