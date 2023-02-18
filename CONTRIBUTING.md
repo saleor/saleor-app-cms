@@ -29,7 +29,10 @@ export const providersConfig = {
   payload: {
     name: "payload",
     label: "Payload",
-    tokens: ["baseUrl", "token"],
+    tokens: [
+      { name: "baseUrl", label: "Base Url" },
+      { name: "token", label: "Token", required: true },
+    ],
   },
 } as const;
 ```
@@ -89,6 +92,8 @@ export default createProvider(payloadOperations, payloadConfigSchema); // `creat
 const payloadOperations: CreateOperations<PayloadConfig> = (config) => {
   return {
     createProduct: async (payload) => ...,
+    updateProduct: async (payload) => ...,
+    deleteProduct: async (payload) => ...,
   }
 }
 ```
