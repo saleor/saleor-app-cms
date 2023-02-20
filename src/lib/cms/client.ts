@@ -1,7 +1,15 @@
-import { SALEOR_AUTHORIZATION_BEARER_HEADER, SALEOR_API_URL_HEADER } from "@saleor/app-sdk/const";
+import {
+  SALEOR_AUTHORIZATION_BEARER_HEADER,
+  SALEOR_API_URL_HEADER,
+  SALEOR_DOMAIN_HEADER,
+} from "@saleor/app-sdk/const";
 import { NextWebhookApiHandler } from "@saleor/app-sdk/handlers/next";
+import { cmsProviders } from ".";
 import { SettingsApiResponse } from "../../pages/api/settings";
-import { providersSchema, cmsProviders } from ".";
+import { createClient } from "../graphql";
+import { createSettingsManager } from "../metadata";
+import { getSettings } from "../settings";
+import { providersSchema } from "./config";
 import { transformSettingsIntoConfig } from "./utils";
 
 type WebhookContext = Parameters<NextWebhookApiHandler>["2"];
@@ -12,21 +20,13 @@ export const createCmsClient = async (context: WebhookContext) => {
   const saleorApiUrl = context.authData.saleorApiUrl;
   const token = context.authData.token;
 
-  const response = await fetch(`${host}/api/settings`, {
-    headers: [
-      ["content-type", "application/json"],
-      [SALEOR_API_URL_HEADER, saleorApiUrl],
-      [SALEOR_AUTHORIZATION_BEARER_HEADER, token],
-    ],
-  });
+  const client = createClient(saleorApiUrl, async () => ({
+    token: token,
+  }));
 
-  const result = (await response.json()) as SettingsApiResponse;
+  const settingsManager = createSettingsManager(client);
 
-  if (!result.success) {
-    throw new Error("The provider was not recognized.");
-  }
-
-  const settings = result.data ?? [];
+  const settings = await getSettings(settingsManager);
 
   const enabledSetting = settings.find(
     (item) => item.key.includes("enabled") && item.value === "true"
@@ -49,6 +49,10 @@ export const createCmsClient = async (context: WebhookContext) => {
 
     case "contentful": {
       return cmsProviders.contentful.create(config.contentful);
+    }
+
+    case "datocms": {
+      return cmsProviders.datocms.create(config.datocms);
     }
 
     default: {

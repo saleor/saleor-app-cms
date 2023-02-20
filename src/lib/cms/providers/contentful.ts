@@ -1,25 +1,8 @@
 import { v4 as uuidv4 } from "uuid";
-import { z } from "zod";
+import { ContentfulConfig, contentfulConfigSchema } from "../config";
 
-import {
-  CreateOperations,
-  CreateProductResponse,
-  CreateProviderConfig,
-  ProductInput,
-} from "../types";
+import { CreateOperations, CreateProductResponse, ProductInput } from "../types";
 import { createProvider } from "./create";
-
-type ContentfulConfig = CreateProviderConfig<"contentful">;
-
-const contentfulConfigSchema: z.ZodType<ContentfulConfig> = z.object({
-  token: z.string(),
-  baseUrl: z.string(),
-  environment: z.string(),
-  spaceId: z.string(),
-  locale: z.string(),
-  contentId: z.string(),
-  enabled: z.boolean(),
-});
 
 const contentfulFetch = (endpoint: string, config: ContentfulConfig, options?: RequestInit) => {
   const { baseUrl, token } = config;

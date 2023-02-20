@@ -3,13 +3,8 @@ import { useAppBridge } from "@saleor/app-sdk/app-bridge";
 import { SALEOR_API_URL_HEADER, SALEOR_AUTHORIZATION_BEARER_HEADER } from "@saleor/app-sdk/const";
 import React from "react";
 import { ConfigurationForm } from "../components/ConfigurationForm";
-import {
-  CMSProvider,
-  ProvidersSchema,
-  providersSchema,
-  transformConfigIntoSettings,
-  transformSettingsIntoConfig,
-} from "../lib/cms";
+import { type ProvidersSchema, providersSchema, CMSProviderSchema } from "../lib/cms/config";
+import { transformConfigIntoSettings, transformSettingsIntoConfig } from "../lib/cms/utils";
 import { SettingsApiResponse } from "../pages/api/settings";
 
 const useGetSettings = () => {
@@ -64,7 +59,7 @@ export const Configuration = () => {
   const { data: config, error, isLoading: isFetching } = useGetSettings();
   const [isSaving, setIsSaving] = React.useState(false);
 
-  const saveSettings = async <TProvider extends CMSProvider>(
+  const saveSettings = async <TProvider extends CMSProviderSchema>(
     config: ProvidersSchema[TProvider],
     provider: TProvider
   ) => {
@@ -101,7 +96,7 @@ export const Configuration = () => {
               Object.entries(config).map(([providerName, values]) => (
                 <Grid item xs={12} key={providerName}>
                   <ConfigurationForm
-                    provider={providerName as CMSProvider}
+                    provider={providerName as CMSProviderSchema}
                     defaultValues={values}
                     onSubmit={saveSettings}
                     isLoading={isSaving}

@@ -1,13 +1,12 @@
 import { createProtectedHandler, NextProtectedApiHandler } from "@saleor/app-sdk/handlers/next";
-import { SettingsValue } from "@saleor/app-sdk/settings-manager";
+
 import type { NextApiRequest, NextApiResponse } from "next";
 
 import { saleorApp } from "../../../saleor-app";
-import { providersConfig } from "../../lib/cms";
+import { Setting } from "../../lib/cms/utils";
 import { createClient } from "../../lib/graphql";
 import { createSettingsManager } from "../../lib/metadata";
-
-export type Setting = SettingsValue;
+import { getSettings } from "../../lib/settings";
 
 export type SettingsUpdateApiRequest = Setting[];
 
@@ -20,14 +19,6 @@ export interface SettingsApiResponse {
 // const obfuscateSecret = (secret: string) => {
 //   return "*".repeat(secret.length - 4) + secret.substring(secret.length - 4);
 // };
-
-const getFieldValue = (settingsManagerValue: string | undefined, fieldName: string) => {
-  if (!settingsManagerValue && fieldName.includes("enabled")) {
-    return "false";
-  }
-
-  return settingsManagerValue ?? "";
-};
 
 const handler: NextProtectedApiHandler = async (
   req: NextApiRequest,
@@ -43,26 +34,11 @@ const handler: NextProtectedApiHandler = async (
   const settingsManager = createSettingsManager(client);
 
   if (req.method === "GET") {
-    const defaultSettingNames = Object.keys(providersConfig).map((key) => `${key}.enabled`);
-    const settingsNames = Object.entries(providersConfig).reduce(
-      (prev, [providerName, config]) => [
-        ...prev,
-        ...config.tokens.map((token) => `${providerName}.${token}`),
-      ],
-      [...defaultSettingNames] as string[]
-    );
+    const settings = await getSettings(settingsManager);
 
     return res.status(200).json({
       success: true,
-      data: await Promise.all(
-        settingsNames.map(async (fieldName) => {
-          const settingsManagerValue = await settingsManager.get(fieldName);
-          return {
-            key: fieldName,
-            value: getFieldValue(settingsManagerValue, fieldName),
-          };
-        })
-      ),
+      data: settings,
     });
   } else if (req.method === "POST") {
     const settings = req.body as SettingsUpdateApiRequest;

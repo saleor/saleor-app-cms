@@ -12,22 +12,27 @@ import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
 import { Button } from "@saleor/macaw-ui";
 import React from "react";
 import { Controller, Path, useForm } from "react-hook-form";
-import { CMSProvider, cmsProviders, providersConfig, ProvidersSchema } from "../lib/cms";
+import {
+  providersConfig,
+  CMSProviderSchema,
+  providersSchemaSet,
+  ProvidersSchema,
+} from "../lib/cms/config";
 
-type ConfigurationFormProps<TProvider extends CMSProvider> = {
+type ConfigurationFormProps<TProvider extends CMSProviderSchema> = {
   defaultValues: ProvidersSchema[TProvider];
   onSubmit: (values: ProvidersSchema[TProvider], provider: TProvider) => any;
   provider: TProvider;
   isLoading: boolean;
 };
 
-export const ConfigurationForm = <TProvider extends CMSProvider>({
+export const ConfigurationForm = <TProvider extends CMSProviderSchema>({
   defaultValues,
   onSubmit,
   provider,
   isLoading,
 }: ConfigurationFormProps<TProvider>) => {
-  const schema = cmsProviders[provider].schema;
+  const schema = providersSchemaSet[provider];
   const { register, handleSubmit, reset, control } = useForm<ProvidersSchema[TProvider]>({
     resolver: zodResolver(schema),
   });
@@ -71,13 +76,16 @@ export const ConfigurationForm = <TProvider extends CMSProvider>({
                 label={"On / off"}
               />
             </Grid>
-            {fields.map((tokenName) => (
-              <Grid xs={12} item key={tokenName}>
+            {fields.map((token) => (
+              <Grid xs={12} item key={token.name}>
                 <TextField
-                  {...register(tokenName as Path<ProvidersSchema[TProvider]>)}
-                  label={tokenName}
+                  {...register(token.name as Path<ProvidersSchema[TProvider]>, {
+                    required: "required" in token && token.required,
+                  })}
+                  required={"required" in token && token.required}
+                  label={token.label}
                   type="password"
-                  name={tokenName}
+                  name={token.name}
                   fullWidth
                 />
               </Grid>

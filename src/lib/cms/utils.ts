@@ -1,6 +1,8 @@
-import { CMS_ID_KEY } from ".";
-import { Setting } from "../../pages/api/settings";
-import { CMSProvider, ProvidersSchema } from ".";
+import { CMS_ID_KEY } from "./config";
+import { type ProvidersSchema, CMSProviderSchema } from "./config";
+import { SettingsValue } from "@saleor/app-sdk/settings-manager";
+
+export type Setting = SettingsValue;
 
 type MetadataItem = Record<string, any> & { key: string; value: string };
 
@@ -45,7 +47,7 @@ const parseOptionValue = ({ name, value }: { name: string; value: string | boole
   return String(value);
 };
 
-export const transformConfigIntoSettings = <TProvider extends CMSProvider>(
+export const transformConfigIntoSettings = <TProvider extends CMSProviderSchema>(
   config: ProvidersSchema[TProvider],
   provider: TProvider
 ): Setting[] => {

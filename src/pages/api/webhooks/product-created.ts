@@ -76,6 +76,8 @@ export const handler: NextWebhookApiHandler<ProductCreatedWebhookPayloadFragment
           })
           .toPromise();
         return res.status(200).end();
+      } else {
+        return res.status(500).json({ error: createProductResponse?.error });
       }
     }
   } catch (error) {

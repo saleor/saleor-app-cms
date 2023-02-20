@@ -1,20 +1,6 @@
-import { z } from "zod";
-import {
-  CmsOperations,
-  CreateOperations,
-  CreateProductResponse,
-  CreateProviderConfig,
-  ProductInput,
-} from "../types";
+import { StrapiConfig, strapiConfigSchema } from "../config";
+import { CmsOperations, CreateOperations, CreateProductResponse, ProductInput } from "../types";
 import { createProvider } from "./create";
-
-type StrapiConfig = CreateProviderConfig<"strapi">;
-
-const strapiConfigSchema: z.ZodType<StrapiConfig> = z.object({
-  token: z.string(),
-  baseUrl: z.string(),
-  enabled: z.boolean(),
-});
 
 const strapiFetch = (endpoint: string, config: StrapiConfig, options?: RequestInit) => {
   const { baseUrl, token } = config;
