@@ -43,7 +43,7 @@ export const providersConfig = {
 > - generate an integration configuration view (see: `src/views/configuration.tsx`)
 > - store & fetch the tokens from the settings API (see: `src/pages/api/settings.ts`)
 
-3. Add configurartion fields to schema:
+3. Add configuration fields to schema:
 
 ```ts
 // src/lib/cms/config.ts
