@@ -10,6 +10,7 @@ import clsx from "clsx";
 import { ChannelFragment } from "../../../../generated/graphql";
 import { MergedChannelSchema, SingleChannelSchema } from "../../../lib/cms/config";
 import { useChannelSlug } from "../../cms/cms-context";
+import ProviderIcon from "../../provider-instances/ui/provider-icon";
 
 const useStyles = makeStyles((theme) => {
   return {

@@ -96,6 +96,7 @@ export const datocmsConfigSchema = z.object({
 });
 
 export const providerCommonSchema = z.object({
+  id: z.string(),
   providerName: z.string(),
 });
 

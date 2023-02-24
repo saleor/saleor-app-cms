@@ -1,5 +1,4 @@
-import { ChannelsSchema, CMSChannelSchema, CMSSchema, CMS_ID_KEY } from "./config";
-import { type ProvidersSchema, CMSProviderSchema } from "./config";
+import { CMSSchema, CMS_ID_KEY } from "./config";
 import { SettingsValue } from "@saleor/app-sdk/settings-manager";
 
 const commonSettingsTypes = {
@@ -63,26 +62,6 @@ const parseOptionValue = ({
   }
 
   return String(value);
-};
-
-export const transformProviderConfigIntoSettings = <
-  TProvider extends CMSProviderSchema | CMSChannelSchema
->(
-  config: TProvider extends CMSProviderSchema
-    ? ProvidersSchema[TProvider]
-    : TProvider extends CMSChannelSchema
-    ? ChannelsSchema[TProvider]
-    : never,
-  provider: TProvider
-): Setting[] => {
-  return Object.entries(config)
-    .map(([name, value]) => {
-      return {
-        key: `${provider}.${name}`,
-        value: parseOptionValue({ name, value }),
-      };
-    })
-    .flatMap((c) => c);
 };
 
 export const transformConfigIntoSettings = <T extends keyof CMSSchema>(

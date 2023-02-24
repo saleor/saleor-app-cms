@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Checkbox, FormControlLabel, Grid, TextField, Typography } from "@material-ui/core";
 import { Button, makeStyles } from "@saleor/macaw-ui";
 import React from "react";
-import { Controller, Path, useForm } from "react-hook-form";
+import { Controller, DeepRequired, FieldErrorsImpl, Path, useForm } from "react-hook-form";
 import { z } from "zod";
 import {
   providersConfig,
@@ -19,12 +19,17 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "flex-end",
   },
+  footerComplex: {
+    display: "flex",
+    justifyContent: "space-between",
+  },
 }));
 
 interface ProviderInstanceConfigurationFormProps<TProvider extends CMSProviderSchema> {
   provider: Provider;
   providerInstance?: SingleProviderSchema | null;
   onSubmit: (provider: SingleProviderSchema) => any;
+  onDelete: (provider: SingleProviderSchema) => any;
   loading: boolean;
 }
 
@@ -32,6 +37,7 @@ const ProviderInstanceConfigurationForm = <TProvider extends CMSProviderSchema>(
   provider,
   providerInstance,
   onSubmit,
+  onDelete,
   loading,
 }: ProviderInstanceConfigurationFormProps<TProvider>) => {
   const styles = useStyles();
@@ -87,6 +93,11 @@ const ProviderInstanceConfigurationForm = <TProvider extends CMSProviderSchema>(
         )}
         <input
           type="hidden"
+          {...register("id" as Path<ProvidersSchema[TProvider]>)}
+          value={providerInstance?.id}
+        />
+        <input
+          type="hidden"
           {...register("providerName" as Path<ProvidersSchema[TProvider]>)}
           value={provider.name}
         />
@@ -118,12 +129,18 @@ const ProviderInstanceConfigurationForm = <TProvider extends CMSProviderSchema>(
                 shrink: !!watch(token.name as Path<ProvidersSchema[TProvider]>),
               }}
               fullWidth
-              error={!!errors[token.name]}
-              helperText={<>{errors[token.name]?.message}</>}
+              // @ts-ignore TODO: fix errors typing
+              error={!!errors[token.name as Path<ProvidersSchema[TProvider]>]}
+              helperText={<>{errors[token.name as Path<ProvidersSchema[TProvider]>]?.message}</>}
             />
           </Grid>
         ))}
-        <Grid item xs={12} className={styles.footer}>
+        <Grid item xs={12} className={providerInstance ? styles.footerComplex : styles.footer}>
+          {providerInstance && (
+            <Button variant="secondary" disabled={loading} onClick={() => onDelete(getValues())}>
+              Delete
+            </Button>
+          )}
           <Button variant="primary" disabled={loading} type="submit">
             {loading ? "..." : providerInstance ? "Save" : "Add"}
           </Button>

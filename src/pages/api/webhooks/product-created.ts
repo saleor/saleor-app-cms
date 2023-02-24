@@ -20,6 +20,7 @@ export const ProductCreatedWebhookPayload = gql`
       id
       name
       slug
+      channel
       media {
         url
       }

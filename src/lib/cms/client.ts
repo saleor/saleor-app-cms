@@ -1,11 +1,5 @@
-import {
-  SALEOR_AUTHORIZATION_BEARER_HEADER,
-  SALEOR_API_URL_HEADER,
-  SALEOR_DOMAIN_HEADER,
-} from "@saleor/app-sdk/const";
 import { NextWebhookApiHandler } from "@saleor/app-sdk/handlers/next";
 import { cmsProviders } from ".";
-import { SettingsApiResponse } from "../../pages/api/settings";
 import { createClient } from "../graphql";
 import { createSettingsManager } from "../metadata";
 import { getSettings } from "../settings";
@@ -28,6 +22,7 @@ export const createCmsClient = async (context: WebhookContext) => {
 
   const settings = await getSettings(settingsManager);
 
+  // TODO: change in order to support multi-channels
   const enabledSetting = settings.find(
     (item) => item.key.includes("enabled") && item.value === "true"
   );

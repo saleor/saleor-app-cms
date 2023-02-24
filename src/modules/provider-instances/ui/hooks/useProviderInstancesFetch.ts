@@ -35,7 +35,7 @@ const useProviderInstancesFetch = () => {
 
       if (result.success && result.data) {
         // const config = transformSettingsIntoConfig(result.data);
-        const config = result.data;
+        const config = result.data as CMSSchemaProviderInstances;
         console.log("getSettings config", config);
         // const validation = cmsSchemaProviderInstances.safeParse(config);
         // console.log("getSettings validation", validation);
@@ -54,7 +54,7 @@ const useProviderInstancesFetch = () => {
     }
   };
 
-  const saveProviderInstance = async (config: SingleProviderSchema) => {
+  const saveProviderInstance = async (instance: SingleProviderSchema) => {
     try {
       setIsSaving(true);
       const response = await fetch("/api/provider-instances", {
@@ -64,17 +64,51 @@ const useProviderInstancesFetch = () => {
           [SALEOR_API_URL_HEADER, appBridgeState?.saleorApiUrl!],
           [SALEOR_AUTHORIZATION_BEARER_HEADER, appBridgeState?.token!],
         ],
-        body: JSON.stringify(config),
+        body: JSON.stringify(instance),
       });
 
-      const result = await response.json();
+      const result = (await response.json()) as ProviderInstancesApiResponse;
       setIsSaving(false);
 
       console.log("saveSettings result", result);
 
       if (result.success && result.data) {
+        const instanceInConfig = result.data as SingleProviderSchema;
+        console.log("saveSettings config", instanceInConfig);
+
+        setConfig({
+          ...config,
+          [instanceInConfig.id]: instanceInConfig,
+        });
+
+        return instanceInConfig;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const deleteProviderInstance = async (instance: SingleProviderSchema) => {
+    try {
+      setIsSaving(true);
+      const response = await fetch("/api/provider-instances", {
+        method: "DELETE",
+        headers: [
+          ["content-type", "application/json"],
+          [SALEOR_API_URL_HEADER, appBridgeState?.saleorApiUrl!],
+          [SALEOR_AUTHORIZATION_BEARER_HEADER, appBridgeState?.token!],
+        ],
+        body: JSON.stringify(instance),
+      });
+
+      const result = await response.json();
+      setIsSaving(false);
+
+      console.log("deleteSettings result", result);
+
+      if (result.success && result.data) {
         const config = result.data;
-        console.log("saveSettings config", config);
+        console.log("deleteSettings config", config);
 
         setConfig(config);
       }
@@ -87,7 +121,14 @@ const useProviderInstancesFetch = () => {
     getProviderInstances();
   }, []);
 
-  return { saveProviderInstance, isSaving, data: config, isFetching, error: validationError };
+  return {
+    saveProviderInstance,
+    deleteProviderInstance,
+    isSaving,
+    data: config,
+    isFetching,
+    error: validationError,
+  };
 };
 
 export default useProviderInstancesFetch;

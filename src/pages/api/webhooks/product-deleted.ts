@@ -14,6 +14,7 @@ export const ProductDeletedWebhookPayload = gql`
   fragment ProductDeletedWebhookPayload on ProductDeleted {
     product {
       id
+      channel
       metadata {
         key
         value

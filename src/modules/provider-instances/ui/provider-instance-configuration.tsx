@@ -81,8 +81,9 @@ const ProviderInstanceConfigurationSkeleton = () => {
 
 interface ProviderInstanceConfigurationProps {
   activeProviderInstance?: SingleProviderSchema | null;
-  newProviderInstance: boolean;
+  newProviderInstance?: SingleProviderSchema | null;
   saveProviderInstance: (providerInstance: SingleProviderSchema) => any;
+  deleteProviderInstance: (providerInstance: SingleProviderSchema) => any;
   loading: ProvidersLoading;
   errors: ProvidersErrors;
 }
@@ -91,14 +92,13 @@ const ProviderInstanceConfiguration = ({
   activeProviderInstance,
   newProviderInstance,
   saveProviderInstance,
+  deleteProviderInstance,
   loading,
   errors,
 }: ProviderInstanceConfigurationProps) => {
   const [selectedProvider, setSelectedProvider] = React.useState<Provider | undefined>(
     getProviderByName(activeProviderInstance?.providerName)
   );
-  const providerInstance =
-    selectedProvider?.name === activeProviderInstance?.providerName ? activeProviderInstance : null;
   const styles = useStyles();
 
   React.useEffect(() => {
@@ -169,9 +169,10 @@ const ProviderInstanceConfiguration = ({
           <br />
           <ProviderInstanceConfigurationForm
             provider={selectedProvider}
-            providerInstance={providerInstance}
+            providerInstance={activeProviderInstance}
             loading={loading.saving}
             onSubmit={saveProviderInstance}
+            onDelete={deleteProviderInstance}
           />
         </>
       ) : (

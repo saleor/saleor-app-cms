@@ -8,12 +8,13 @@ import { Setting } from "../../lib/cms/utils";
 import { createClient } from "../../lib/graphql";
 import { createSettingsManager } from "../../lib/metadata";
 import { getSettings } from "../../lib/settings";
+import { generateUniqueId } from "../../modules/cms/utils";
 
 export type SettingsUpdateApiRequest = SingleProviderSchema;
 
 export interface ProviderInstancesApiResponse {
   success: boolean;
-  data?: CMSSchemaProviderInstances;
+  data?: CMSSchemaProviderInstances | SingleProviderSchema;
 }
 
 // todo: implement
@@ -48,12 +49,48 @@ const handler: NextProtectedApiHandler = async (
       const currentSettings = await settingsManager.get("providerInstances");
       const currentSettingsParsed = currentSettings && JSON.parse(currentSettings);
 
+      const providerInstanceSettingsWithId: SingleProviderSchema = {
+        ...providerInstanceSettings,
+        id: providerInstanceSettings.id || generateUniqueId(),
+      };
+
       const settings = [
         {
           key: "providerInstances",
           value: JSON.stringify({
             ...currentSettingsParsed,
-            [providerInstanceSettings.name]: providerInstanceSettings,
+            [providerInstanceSettingsWithId.id]: providerInstanceSettingsWithId,
+          }),
+        },
+      ];
+
+      try {
+        await settingsManager.set(settings);
+
+        return res.status(200).json({
+          success: true,
+          data: providerInstanceSettingsWithId,
+        });
+      } catch (error) {
+        return res.status(500).json({ success: false });
+      }
+    } else {
+      console.log("Missing Settings Values");
+      return res.status(400).json({ success: false });
+    }
+  } else if (req.method === "DELETE") {
+    const providerInstanceSettings = req.body as SingleProviderSchema;
+
+    if (providerInstanceSettings) {
+      const currentSettings = await settingsManager.get("providerInstances");
+      const currentSettingsParsed = currentSettings && JSON.parse(currentSettings);
+      const { [providerInstanceSettings.id]: _, ...rest } = currentSettingsParsed;
+
+      const settings = [
+        {
+          key: "providerInstances",
+          value: JSON.stringify({
+            ...rest,
           }),
         },
       ];
@@ -64,8 +101,7 @@ const handler: NextProtectedApiHandler = async (
         return res.status(200).json({
           success: true,
           data: {
-            ...currentSettingsParsed,
-            [providerInstanceSettings.name]: providerInstanceSettings,
+            ...rest,
           },
         });
       } catch (error) {

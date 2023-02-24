@@ -6,30 +6,48 @@ import { useEffect, useState } from "react";
 import useProviderInstances from "./hooks/useProviderInstances";
 
 const ProviderInstances = () => {
-  const { providerInstances, saveProviderInstance, loading, errors } = useProviderInstances();
+  const { providerInstances, saveProviderInstance, deleteProviderInstance, loading, errors } =
+    useProviderInstances();
 
-  const [activeProviderInstanceName, setActiveProviderInstanceName] = useState<string | null>(
-    providerInstances.length ? providerInstances[0].name : null
+  const [activeProviderInstanceId, setActiveProviderInstanceId] = useState<string | null>(
+    providerInstances.length ? providerInstances[0].id : null
   );
-  const [addNewProviderInstance, setAddNewProviderInstance] = useState<boolean>(false);
+  const [newProviderInstance, setNewProviderInstance] = useState<SingleProviderSchema | null>(null);
 
   const handleSetActiveProviderInstance = (providerInstance: SingleProviderSchema | null) => {
-    setActiveProviderInstanceName(providerInstance?.name || null);
+    setActiveProviderInstanceId(providerInstance?.id || null);
 
-    if (addNewProviderInstance) {
-      setAddNewProviderInstance(false);
+    if (newProviderInstance) {
+      setNewProviderInstance(null);
     }
   };
   const handleAddNewProviderInstance = () => {
-    setAddNewProviderInstance(true);
+    setNewProviderInstance({} as SingleProviderSchema);
 
-    if (activeProviderInstanceName) {
-      setActiveProviderInstanceName(null);
+    if (activeProviderInstanceId) {
+      setActiveProviderInstanceId(null);
+    }
+  };
+  const handleSaveProviderInstance = async (providerInstance: SingleProviderSchema) => {
+    const savedProviderInstance = await saveProviderInstance(providerInstance);
+
+    if (newProviderInstance) {
+      setNewProviderInstance(null);
+    }
+    if (newProviderInstance && savedProviderInstance) {
+      setActiveProviderInstanceId(savedProviderInstance.id);
+    }
+  };
+  const handleDeleteProviderInstance = async (providerInstance: SingleProviderSchema) => {
+    await deleteProviderInstance(providerInstance);
+
+    if (activeProviderInstanceId === providerInstance.id) {
+      setActiveProviderInstanceId(null);
     }
   };
 
   const activeProviderInstance = providerInstances.find(
-    (providerInstance) => providerInstance.name === activeProviderInstanceName
+    (providerInstance) => providerInstance.id === activeProviderInstanceId
   );
 
   return (
@@ -37,6 +55,7 @@ const ProviderInstances = () => {
       <ProviderInstancesList
         providerInstances={providerInstances}
         activeProviderInstance={activeProviderInstance}
+        newProviderInstance={newProviderInstance}
         setActiveProviderInstance={handleSetActiveProviderInstance}
         requestAddProviderInstance={handleAddNewProviderInstance}
         loading={loading}
@@ -44,8 +63,9 @@ const ProviderInstances = () => {
       />
       <ProviderInstanceConfiguration
         activeProviderInstance={activeProviderInstance}
-        newProviderInstance={addNewProviderInstance}
-        saveProviderInstance={saveProviderInstance}
+        newProviderInstance={newProviderInstance}
+        saveProviderInstance={handleSaveProviderInstance}
+        deleteProviderInstance={handleDeleteProviderInstance}
         loading={loading}
         errors={errors}
       />

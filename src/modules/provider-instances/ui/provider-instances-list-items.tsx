@@ -56,17 +56,17 @@ export interface ProviderItem {
 interface ProviderInstancesListItemsProps {
   providerInstances: SingleProviderSchema[];
   activeProviderInstance?: SingleProviderSchema | null;
+  newProviderInstance?: SingleProviderSchema | null;
   setActiveProviderInstance: (provider: SingleProviderSchema) => void;
 }
 
 const ProviderInstancesListItems = ({
   providerInstances,
   activeProviderInstance,
+  newProviderInstance,
   setActiveProviderInstance,
 }: ProviderInstancesListItemsProps) => {
   const styles = useStyles();
-
-  const provider = getProviderByName(activeProviderInstance?.providerName);
 
   return (
     <OffsettedList gridTemplate={["1fr", "1fr"]}>
@@ -80,9 +80,9 @@ const ProviderInstancesListItems = ({
           <OffsettedListItem
             onClick={() => setActiveProviderInstance(providerInstance)}
             className={clsx(styles.listItem, {
-              [styles.listItemActive]: activeProviderInstance?.name === providerInstance.name,
+              [styles.listItemActive]: activeProviderInstance?.id === providerInstance.id,
             })}
-            key={providerInstance.name}
+            key={providerInstance.id}
           >
             <OffsettedListItemCell className={styles.cell}>
               {providerInstance.name}
@@ -90,6 +90,18 @@ const ProviderInstancesListItems = ({
             </OffsettedListItemCell>
           </OffsettedListItem>
         ))}
+        {newProviderInstance && (
+          <OffsettedListItem
+            className={clsx(styles.listItem, {
+              [styles.listItemActive]: !activeProviderInstance,
+            })}
+          >
+            <OffsettedListItemCell className={styles.cell}>
+              {newProviderInstance.name}
+              <ProviderIcon providerName={newProviderInstance.providerName} />
+            </OffsettedListItemCell>
+          </OffsettedListItem>
+        )}
       </OffsettedListBody>
     </OffsettedList>
   );

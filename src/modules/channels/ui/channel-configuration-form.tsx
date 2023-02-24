@@ -20,6 +20,7 @@ import {
   SingleChannelSchema,
   SingleProviderSchema,
 } from "../../../lib/cms/config";
+import ProviderIcon from "../../provider-instances/ui/provider-icon";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -27,6 +28,11 @@ const useStyles = makeStyles((theme) => {
       height: "auto !important",
       display: "grid",
       gridTemplateColumns: "1fr 80px",
+    },
+    itemCell: {
+      display: "flex",
+      alignItems: "center",
+      gap: theme.spacing(2),
     },
     footer: {
       display: "flex",
@@ -101,23 +107,26 @@ const ChannelConfigurationForm = ({
         <ListBody>
           {providerInstances.map((providerInstance) => (
             <ListItem key={providerInstance.name} className={styles.item}>
-              <ListItemCell>{providerInstance.name}</ListItemCell>
+              <ListItemCell className={styles.itemCell}>
+                <ProviderIcon providerName={providerInstance.providerName} />
+                {providerInstance.name}
+              </ListItemCell>
               <ListItemCell padding="checkbox">
                 <FormControl
                   {...register("enabledProviderInstances")}
                   name="enabledProviderInstances"
                   checked={watch("enabledProviderInstances")?.some(
-                    (formOption) => formOption === providerInstance.name
+                    (formOption) => formOption === providerInstance.id
                   )}
-                  onChange={(e) => {
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                     const valueCopy = getValues("enabledProviderInstances")
                       ? [...getValues("enabledProviderInstances")]
                       : [];
-                    if (e.target.checked) {
-                      valueCopy.push(providerInstance.name);
+                    if (event.target.checked) {
+                      valueCopy.push(providerInstance.id);
                     } else {
                       const idx = valueCopy.findIndex(
-                        (formOption) => formOption === providerInstance.name
+                        (formOption) => formOption === providerInstance.id
                       );
                       valueCopy.splice(idx, 1);
                     }

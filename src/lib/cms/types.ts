@@ -25,8 +25,6 @@ export type GetProviderTokens<TProviderName extends keyof typeof providersConfig
 
 export type BaseConfig = {
   name: string;
-  enabled: boolean; // @deprecated
-  enabledInChannels: string[];
 };
 
 // * Generates the config based on the data supplied in the `providersConfig` variable.

@@ -5,16 +5,23 @@ import { ProvidersErrors, ProvidersLoading } from "../types";
 const useProviderInstances = () => {
   const {
     saveProviderInstance: saveProviderInstanceFetch,
+    deleteProviderInstance: deleteProviderInstanceFetch,
     isSaving,
     data: settings,
     error: fetchingError,
     isFetching,
   } = useProviderInstancesFetch();
 
-  const saveProviderInstance = (providerInstanceToSave: SingleProviderSchema) => {
+  const saveProviderInstance = async (providerInstanceToSave: SingleProviderSchema) => {
     console.log("saveProviderInstance", providerInstanceToSave);
 
-    saveProviderInstanceFetch(providerInstanceToSave);
+    return await saveProviderInstanceFetch(providerInstanceToSave);
+  };
+
+  const deleteProviderInstance = async (providerInstanceToDelete: SingleProviderSchema) => {
+    console.log("deleteProviderInstance", providerInstanceToDelete);
+
+    await deleteProviderInstanceFetch(providerInstanceToDelete);
   };
 
   const loading: ProvidersLoading = {
@@ -34,7 +41,7 @@ const useProviderInstances = () => {
       }))) ||
     [];
 
-  return { providerInstances, saveProviderInstance, loading, errors };
+  return { providerInstances, saveProviderInstance, deleteProviderInstance, loading, errors };
 };
 
 export default useProviderInstances;

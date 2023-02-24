@@ -37,6 +37,7 @@ const ProviderInstancesListSkeleton = () => {
 interface ProviderInstancesListProps {
   providerInstances: SingleProviderSchema[];
   activeProviderInstance?: SingleProviderSchema | null;
+  newProviderInstance?: SingleProviderSchema | null;
   setActiveProviderInstance: (providerInstance: SingleProviderSchema | null) => void;
   requestAddProviderInstance: () => void;
   loading: ProvidersLoading;
@@ -46,6 +47,7 @@ interface ProviderInstancesListProps {
 const ProviderInstancesList = ({
   providerInstances,
   activeProviderInstance,
+  newProviderInstance,
   setActiveProviderInstance,
   requestAddProviderInstance,
   loading,
@@ -53,8 +55,8 @@ const ProviderInstancesList = ({
 }: ProviderInstancesListProps) => {
   const styles = useStyles();
 
-  const handleSetActiveProvider = (provider: SingleProviderSchema) => {
-    setActiveProviderInstance(provider);
+  const handleSetActiveProviderInstance = (providerInstance: SingleProviderSchema) => {
+    setActiveProviderInstance(providerInstance);
   };
 
   if (loading.fetching) {
@@ -67,12 +69,13 @@ const ProviderInstancesList = ({
 
   return (
     <Grid container spacing={1}>
-      {!!providerInstances.length && (
+      {(!!providerInstances.length || newProviderInstance) && (
         <Grid item xs={12}>
           <ProviderInstancesListItems
             providerInstances={providerInstances}
             activeProviderInstance={activeProviderInstance}
-            setActiveProviderInstance={handleSetActiveProvider}
+            newProviderInstance={newProviderInstance}
+            setActiveProviderInstance={handleSetActiveProviderInstance}
           />
         </Grid>
       )}
