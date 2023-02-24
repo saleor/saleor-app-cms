@@ -81,10 +81,8 @@ const ProviderInstanceConfigurationForm = <TProvider extends CMSProviderSchema>(
 
   const errors = formState.errors;
 
-  console.log(errors);
-
   return (
-    <form id={providerInstance?.name} onSubmit={handleSubmit(submitHandler)}>
+    <form onSubmit={handleSubmit(submitHandler)}>
       <Grid container spacing={1}>
         {!!Object.entries(errors).length && (
           <Typography variant="body1" color="error">

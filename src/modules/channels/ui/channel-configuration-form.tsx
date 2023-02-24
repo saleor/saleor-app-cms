@@ -72,22 +72,19 @@ const ChannelConfigurationForm = ({
   });
 
   React.useEffect(() => {
+    if (channel) {
+      reset(channel);
+    }
+
     resetField("channelSlug", {
       defaultValue: channel?.channelSlug,
     });
     resetField("enabledProviderInstances", {
-      defaultValue: channel?.enabledProviderInstances,
+      defaultValue: channel?.enabledProviderInstances || [],
     });
-
-    // if (channel) {
-    //   console.log(channel);
-    //   reset(channel);
-    // }
   }, [channel, providerInstances]);
 
   const errors = formState.errors;
-
-  console.log(errors);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
