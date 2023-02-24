@@ -9,11 +9,11 @@ import { productDeletedWebhook } from "./webhooks/product-deleted";
 export default createManifestHandler({
   async manifestFactory(context) {
     const manifest: AppManifest = {
-      name: packageJson.name,
+      name: "CMS",
       tokenTargetUrl: `${context.appBaseUrl}/api/register`,
       appUrl: context.appBaseUrl,
       permissions: ["MANAGE_PRODUCTS"],
-      id: "saleor.app",
+      id: "saleor.app.cms",
       version: packageJson.version,
       webhooks: [
         productUpdatedWebhook.getWebhookManifest(context.appBaseUrl),

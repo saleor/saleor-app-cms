@@ -1,5 +1,6 @@
 import { EncryptedMetadataManager } from "@saleor/app-sdk/settings-manager";
-import { providersConfig } from "./cms/config";
+import { ChannelFragment } from "../../generated/graphql";
+import { cmsSchema, providersConfig } from "./cms/config";
 
 const getFieldValue = (settingsManagerValue: string | undefined, fieldName: string) => {
   if (!settingsManagerValue && fieldName.includes("enabled")) {
@@ -10,22 +11,51 @@ const getFieldValue = (settingsManagerValue: string | undefined, fieldName: stri
 };
 
 export const getSettings = async (settingsManager: EncryptedMetadataManager) => {
-  const defaultSettingNames = Object.keys(providersConfig).map((key) => `${key}.enabled`);
-  const settingsNames = Object.entries(providersConfig).reduce(
-    (prev, [providerName, config]) => [
-      ...prev,
-      ...config.tokens.map((token) => `${providerName}.${token.name}`),
-    ],
-    [...defaultSettingNames] as string[]
-  );
+  // const defaultSettingNames = Object.keys(providersConfig).map((key) => `${key}.enabled`);
+  // const settingsNames = Object.entries(providersConfig).reduce(
+  //   (prev, [providerName, config]) => [
+  //     ...prev,
+  //     ...config.tokens.map((token) => `${providerName}.${token.name}`),
+  //   ],
+  //   [...defaultSettingNames] as string[]
+  // );
 
   return await Promise.all(
-    settingsNames.map(async (fieldName) => {
+    Object.keys(cmsSchema.shape).map(async (fieldName) => {
       const settingsManagerValue = await settingsManager.get(fieldName);
       return {
         key: fieldName,
-        value: getFieldValue(settingsManagerValue, fieldName),
+        value: settingsManagerValue ? JSON.parse(settingsManagerValue) : [],
       };
     })
   );
 };
+
+// providersInstancesIds = ["first","second"]
+// providersInstances.first.setting1 = "value1"
+// providersInstances.first.setting2 = "value2"
+// channels.channel1.enabledProviders = ["first","second"]
+// channels.channel2.enabledProviders = ["first"]
+
+/**
+ * providersInstances = [
+ *  {
+ *   id: "first",
+ *   ...
+ *  },
+ *  {
+ *   id: "second",
+ *   ...
+ *  }
+ * ],
+ * channels = [
+ *  {
+ *   id: "channel1",
+ *   enabledProviders: ["first","second"]
+ *  },
+ *  {
+ *   id: "channel2",
+ *   enabledProviders: ["first"]
+ *  }
+ * ]
+ */

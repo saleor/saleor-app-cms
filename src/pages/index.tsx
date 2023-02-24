@@ -1,11 +1,9 @@
 import { useAppBridge } from "@saleor/app-sdk/app-bridge";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-
-const ClientContent = dynamic(() => import("../views"), {
-  ssr: false,
-});
+import { useIsMounted } from "usehooks-ts";
 
 /**
  * This is page publicly accessible from your app.
@@ -13,19 +11,20 @@ const ClientContent = dynamic(() => import("../views"), {
  */
 const IndexPage: NextPage = () => {
   const { appBridgeState } = useAppBridge();
-  const [mounted, setMounted] = useState(false);
+  const isMounted = useIsMounted();
+  const { replace } = useRouter();
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    if (isMounted() && appBridgeState?.ready) {
+      replace("/providers");
+    }
+  }, [isMounted, appBridgeState?.ready]);
 
   return (
     <div>
-      {appBridgeState?.ready && mounted ? (
-        <ClientContent />
-      ) : (
-        <p>Install this app in your Dashboard and check extra powers!</p>
-      )}
+      <h1>Saleor CMS Hub</h1>
+      <p>This is Saleor App that allows to use external service to handle taxes.</p>
+      <p>Install the app in your Saleor instance and open it in Dashboard.</p>
     </div>
   );
 };

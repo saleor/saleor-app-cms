@@ -3,16 +3,17 @@ import { createProtectedHandler, NextProtectedApiHandler } from "@saleor/app-sdk
 import type { NextApiRequest, NextApiResponse } from "next";
 
 import { saleorApp } from "../../../saleor-app";
+import { CMSSchemaProviderInstances, SingleProviderSchema } from "../../lib/cms/config";
 import { Setting } from "../../lib/cms/utils";
 import { createClient } from "../../lib/graphql";
 import { createSettingsManager } from "../../lib/metadata";
 import { getSettings } from "../../lib/settings";
 
-export type SettingsUpdateApiRequest = Setting[];
+export type SettingsUpdateApiRequest = SingleProviderSchema;
 
-export interface SettingsApiResponse {
+export interface ProviderInstancesApiResponse {
   success: boolean;
-  data?: Setting[];
+  data?: CMSSchemaProviderInstances;
 }
 
 // todo: implement
@@ -22,7 +23,7 @@ export interface SettingsApiResponse {
 
 const handler: NextProtectedApiHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse<SettingsApiResponse>,
+  res: NextApiResponse<ProviderInstancesApiResponse>,
   context
 ) => {
   const { authData } = context;
@@ -34,41 +35,39 @@ const handler: NextProtectedApiHandler = async (
   const settingsManager = createSettingsManager(client);
 
   if (req.method === "GET") {
-    // const settings = await getSettings(settingsManager);
     const settingsManagerValue = await settingsManager.get("providerInstances");
-    console.log([
-      {
-        key: "providerInstances",
-        value: settingsManagerValue && JSON.parse(settingsManagerValue),
-      },
-    ]);
 
     return res.status(200).json({
       success: true,
-      data: [
-        {
-          key: "providerInstances",
-          value: settingsManagerValue && JSON.parse(settingsManagerValue),
-        },
-      ],
+      data: settingsManagerValue && JSON.parse(settingsManagerValue),
     });
   } else if (req.method === "POST") {
-    const settings = req.body as SettingsUpdateApiRequest;
+    const providerInstanceSettings = req.body as SingleProviderSchema;
 
-    console.log(settings);
+    if (providerInstanceSettings) {
+      const currentSettings = await settingsManager.get("providerInstances");
+      const currentSettingsParsed = currentSettings && JSON.parse(currentSettings);
 
-    if (settings) {
+      const settings = [
+        {
+          key: "providerInstances",
+          value: JSON.stringify({
+            ...currentSettingsParsed,
+            [providerInstanceSettings.name]: providerInstanceSettings,
+          }),
+        },
+      ];
+
       try {
-        const settingsManagerValue = await settingsManager.get("providerInstances");
         await settingsManager.set(settings);
-        console.log([
-          {
-            key: "providerInstances",
-            value: settingsManagerValue && JSON.parse(settingsManagerValue),
+
+        return res.status(200).json({
+          success: true,
+          data: {
+            ...currentSettingsParsed,
+            [providerInstanceSettings.name]: providerInstanceSettings,
           },
-        ]);
-        console.log("Settings Updated", settingsUpdated);
-        return res.status(200).json({ success: true });
+        });
       } catch (error) {
         return res.status(500).json({ success: false });
       }

@@ -23,7 +23,11 @@ export type CmsOperations = {
 export type GetProviderTokens<TProviderName extends keyof typeof providersConfig> =
   typeof providersConfig[TProviderName]["tokens"][number];
 
-export type BaseConfig = { enabled: boolean };
+export type BaseConfig = {
+  name: string;
+  enabled: boolean; // @deprecated
+  enabledInChannels: string[];
+};
 
 // * Generates the config based on the data supplied in the `providersConfig` variable.
 export type CreateProviderConfig<TProviderName extends keyof typeof providersConfig> = Record<
