@@ -11,6 +11,7 @@ import {
 } from "../../../lib/cms/config";
 import { ChannelsErrors, ChannelsLoading } from "./types";
 import { makeStyles } from "@saleor/macaw-ui";
+import { AppTabNavButton } from "../../ui/app-tab-nav-button";
 
 const useStyles = makeStyles((theme) => ({
   textCenter: {
@@ -78,6 +79,20 @@ const ChannelConfiguration = ({
       <AppPaper>
         <Typography variant="body1" className={styles.textCenter}>
           Please select a channel.
+        </Typography>
+      </AppPaper>
+    );
+  }
+
+  if (!providerInstances.length) {
+    return (
+      <AppPaper>
+        <Typography variant="body1" className={styles.textCenter}>
+          Please create at least one provider instance before you manage its configuration in
+          channels.
+          <br />
+          <br />
+          Go to the <AppTabNavButton to="providers">Providers</AppTabNavButton> tab.
         </Typography>
       </AppPaper>
     );
