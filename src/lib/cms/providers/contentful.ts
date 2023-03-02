@@ -48,6 +48,8 @@ const transformInputToBody = ({
       name: {
         [locale]: input.name,
       },
+      // todo: add "saleor_id" and test if sending it to contentful works
+      // todo: add "saleor_channel" and test if sending it to contentful works
       // image: {
       //   [locale]: input.image,
       // },

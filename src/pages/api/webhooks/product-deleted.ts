@@ -2,7 +2,7 @@ import { NextWebhookApiHandler, SaleorAsyncWebhook } from "@saleor/app-sdk/handl
 import { gql } from "urql";
 import { ProductDeletedWebhookPayloadFragment } from "../../../../generated/graphql";
 import { saleorApp } from "../../../../saleor-app";
-import { createCmsClient, getCmsIdFromProduct } from "../../../lib/cms";
+import { createCmsClientInstances, getCmsIdFromProduct } from "../../../lib/cms";
 
 export const config = {
   api: {
@@ -46,23 +46,29 @@ export const handler: NextWebhookApiHandler<ProductDeletedWebhookPayloadFragment
   context
 ) => {
   const { product } = context.payload;
-  const cmsClient = await createCmsClient(context);
+  const cmsClientInstances = await createCmsClientInstances(context, product?.channel);
+
+  console.log("PRODUCT_DELETED", product);
   console.log("PRODUCT_DELETED triggered");
 
-  if (product && cmsClient) {
-    const cmsId = getCmsIdFromProduct(product);
+  if (product) {
+    cmsClientInstances.forEach(async (cmsClient) => {
+      console.log("CMS client instance", cmsClient);
 
-    if (cmsId) {
-      try {
-        await cmsClient.deleteProduct({
-          id: cmsId,
-        });
-        return res.status(200).end();
-      } catch (error) {
-        console.log(error);
-        return res.status(500).json({ error });
+      const cmsId = getCmsIdFromProduct(product, cmsClient.cmsProviderInstanceId);
+
+      if (cmsId) {
+        try {
+          await cmsClient.operations.deleteProduct({
+            id: cmsId,
+          });
+          return res.status(200).end();
+        } catch (error) {
+          console.log(error);
+          return res.status(500).json({ error });
+        }
       }
-    }
+    });
   }
 };
 

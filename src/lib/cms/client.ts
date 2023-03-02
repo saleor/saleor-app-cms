@@ -1,15 +1,17 @@
 import { NextWebhookApiHandler } from "@saleor/app-sdk/handlers/next";
-import { cmsProviders } from ".";
 import { createClient } from "../graphql";
 import { createSettingsManager } from "../metadata";
-import { getSettings } from "../settings";
-import { providersSchema } from "./config";
-import { transformSettingsIntoConfig } from "./utils";
+import { CMSSchemaChannels, CMSSchemaProviderInstances, providersSchemaSet } from "./config";
+import cmsProviders, { CMSProvider } from "./providers";
+import { CmsClientOperations } from "./types";
 
 type WebhookContext = Parameters<NextWebhookApiHandler>["2"];
 
 // todo: add support for multiple providers at once
-export const createCmsClient = async (context: WebhookContext) => {
+export const createCmsClientInstances = async (
+  context: WebhookContext,
+  channel?: string | null
+) => {
   const host = context.baseUrl;
   const saleorApiUrl = context.authData.saleorApiUrl;
   const token = context.authData.token;
@@ -20,38 +22,61 @@ export const createCmsClient = async (context: WebhookContext) => {
 
   const settingsManager = createSettingsManager(client);
 
-  const settings = await getSettings(settingsManager);
+  const channelsSettings = await settingsManager.get("channels");
+  const channelsSettingsParsed: CMSSchemaChannels =
+    channelsSettings && JSON.parse(channelsSettings);
 
-  // TODO: change in order to support multi-channels
-  const enabledSetting = settings.find(
-    (item) => item.key.includes("enabled") && item.value === "true"
+  const providerInstancesSettings = await settingsManager.get("providerInstances");
+  const providerInstancesSettingsParsed: CMSSchemaProviderInstances =
+    providerInstancesSettings && JSON.parse(providerInstancesSettings);
+
+  const singleChannelSettings = channelsSettingsParsed[channel || "default"];
+
+  if (!singleChannelSettings) {
+    throw new Error("The channel settings were not found.");
+  }
+
+  const { enabledProviderInstances } = singleChannelSettings;
+
+  const enabledProviderInstancesSettings = Object.values(providerInstancesSettingsParsed).filter(
+    (providerInstance) => enabledProviderInstances.includes(providerInstance.id)
   );
-  const provider = enabledSetting?.key.split(".")?.[0];
 
-  const baseConfig = transformSettingsIntoConfig(settings);
-  const validation = providersSchema.safeParse(baseConfig);
+  const clientInstances = enabledProviderInstancesSettings.reduce<CmsClientOperations[]>(
+    (acc, providerInstanceSettings) => {
+      const provider = cmsProviders[
+        providerInstanceSettings.providerName as CMSProvider
+      ] as typeof cmsProviders[keyof typeof cmsProviders];
 
-  if (!validation.success) {
-    throw new Error(validation.error.message);
-  }
+      const validation =
+        providersSchemaSet[providerInstanceSettings.providerName as CMSProvider].safeParse(
+          providerInstanceSettings
+        );
 
-  const config = validation.data;
+      if (!validation.success) {
+        // todo: use instead: throw new Error(validation.error.message);
+        // continue with other provider instances
+        console.error(validation.error.message);
 
-  switch (provider) {
-    case "strapi": {
-      return cmsProviders.strapi.create(config.strapi);
-    }
+        return acc;
+      }
 
-    case "contentful": {
-      return cmsProviders.contentful.create(config.contentful);
-    }
+      const config = validation.data;
 
-    case "datocms": {
-      return cmsProviders.datocms.create(config.datocms);
-    }
+      if (provider) {
+        return [
+          ...acc,
+          {
+            cmsProviderInstanceId: providerInstanceSettings.id,
+            // todo: fix validation to not pass config as any
+            operations: provider.create(config as any), // config without validation = providerInstanceSettings as any
+          },
+        ];
+      }
+      return acc;
+    },
+    [] as CmsClientOperations[]
+  );
 
-    default: {
-      throw new Error("The provider was not recognized.");
-    }
-  }
+  return clientInstances;
 };

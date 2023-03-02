@@ -5,7 +5,7 @@ import {
   UpdateMetadataDocument,
 } from "../../../../generated/graphql";
 import { saleorApp } from "../../../../saleor-app";
-import { CMS_ID_KEY, createCmsClient } from "../../../lib/cms";
+import { createCmsClientInstances, createCmsIdForProduct } from "../../../lib/cms";
 import { createClient } from "../../../lib/graphql";
 
 export const config = {
@@ -53,37 +53,62 @@ export const handler: NextWebhookApiHandler<ProductCreatedWebhookPayloadFragment
   const { product } = context.payload;
   const { domain, token } = context.authData;
 
+  console.log("PRODUCT_CREATED", product);
+
   try {
-    const cmsClient = await createCmsClient(context);
+    const cmsClientInstances = await createCmsClientInstances(context, product?.channel);
     const apiClient = createClient(`https://${domain}/graphql/`, async () => ({ token }));
 
     console.log("PRODUCT_CREATED triggered");
 
-    if (product && cmsClient && apiClient) {
-      const createProductResponse = await cmsClient?.createProduct({
-        input: {
-          id: product.id,
-          name: product.name,
-          slug: product?.slug,
-          image: product.media?.[0]?.url ?? "",
-        },
+    if (product && cmsClientInstances && apiClient) {
+      const cmsProviderInstanceProductIds: Record<string, string> = {};
+      const cmsErrors: string[] = [];
+
+      cmsClientInstances.forEach(async (cmsClient) => {
+        console.log("CMS client instance", cmsClient);
+
+        const createProductResponse = await cmsClient.operations.createProduct({
+          input: {
+            id: product.id,
+            name: product.name,
+            slug: product?.slug,
+            image: product.media?.[0]?.url ?? "",
+            channel: product.channel,
+          },
+        });
+
+        if (createProductResponse?.ok) {
+          cmsProviderInstanceProductIds[cmsClient.cmsProviderInstanceId] =
+            createProductResponse.data.id;
+        } else {
+          cmsErrors.push(createProductResponse?.error);
+        }
       });
 
-      if (createProductResponse?.ok) {
+      if (Object.keys(cmsProviderInstanceProductIds).length) {
         await apiClient
           .mutation(UpdateMetadataDocument, {
-            input: [{ key: CMS_ID_KEY, value: createProductResponse.data.id }],
             id: product.id,
+            input: Object.entries(cmsProviderInstanceProductIds).map(
+              ([cmsProviderInstanceId, cmsProductId]) => ({
+                key: createCmsIdForProduct(cmsProviderInstanceId),
+                value: cmsProductId,
+              })
+            ),
           })
           .toPromise();
+      }
+
+      if (!cmsErrors.length) {
         return res.status(200).end();
       } else {
-        return res.status(500).json({ error: createProductResponse?.error });
+        return res.status(500).json({ errors: cmsErrors });
       }
     }
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ error });
+    return res.status(500).json({ errors: [error] });
   }
 };
 

@@ -6,6 +6,7 @@ export type ProductInput = Record<string, any> & {
   slug: string;
   name: string;
   image?: string;
+  channel?: string | null;
 };
 
 export type CreateProductResponse =
@@ -18,6 +19,11 @@ export type CmsOperations = {
   createProduct: ({ input }: { input: ProductInput }) => Promise<CreateProductResponse>;
   updateProduct: ({ id, input }: { id: string; input: ProductInput }) => Promise<Response | void>;
   deleteProduct: ({ id }: { id: string }) => Promise<Response | void>;
+};
+
+export type CmsClientOperations = {
+  cmsProviderInstanceId: string;
+  operations: CmsOperations;
 };
 
 export type GetProviderTokens<TProviderName extends keyof typeof providersConfig> =

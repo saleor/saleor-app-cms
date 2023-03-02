@@ -54,6 +54,7 @@ const datocmsOperations: CreateOperations<DatocmsConfig> = (config) => {
           name: input.name,
           slug: input.slug,
           saleor_id: input.id,
+          saleor_channel: input.channel,
         });
         return transformResponseItem(item);
       } catch (error) {
@@ -67,6 +68,7 @@ const datocmsOperations: CreateOperations<DatocmsConfig> = (config) => {
         name: input.name,
         slug: input.slug,
         saleor_id: input.id,
+        saleor_channel: input.channel,
       });
     },
     deleteProduct: async ({ id }) => {
