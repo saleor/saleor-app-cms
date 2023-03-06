@@ -1,12 +1,19 @@
 import { z } from "zod";
 import { providersConfig } from "./config";
 
+export type ProductInputPrice = {
+  channel: string;
+  amount?: number;
+  currency?: string;
+};
+
 export type ProductInput = Record<string, any> & {
-  id: string;
-  slug: string;
+  saleorId: string;
   name: string;
+  productName: string;
+  productSlug: string;
   image?: string;
-  channel?: string | null;
+  price: ProductInputPrice[];
 };
 
 export type CreateProductResponse =
@@ -24,6 +31,7 @@ export type CmsOperations = {
 export type CmsClientOperations = {
   cmsProviderInstanceId: string;
   operations: CmsOperations;
+  operationType: keyof CmsOperations;
 };
 
 export type GetProviderTokens<TProviderName extends keyof typeof providersConfig> =

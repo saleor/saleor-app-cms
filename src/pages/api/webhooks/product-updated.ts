@@ -2,7 +2,7 @@ import { NextWebhookApiHandler, SaleorAsyncWebhook } from "@saleor/app-sdk/handl
 import { gql } from "urql";
 import { ProductUpdatedWebhookPayloadFragment } from "../../../../generated/graphql";
 import { saleorApp } from "../../../../saleor-app";
-import { createCmsClientInstances, getCmsIdFromProduct } from "../../../lib/cms";
+import { createCmsClientInstances, getCmsIdFromSaleorItem } from "../../../lib/cms";
 
 export const config = {
   api: {
@@ -16,7 +16,27 @@ export const ProductUpdatedWebhookPayload = gql`
       id
       name
       slug
-      channel
+      channelListings {
+        id
+        channel {
+          id
+          slug
+        }
+        isPublished
+      }
+      variants {
+        channelListings {
+          id
+          channel {
+            id
+            slug
+          }
+          price {
+            amount
+            currency
+          }
+        }
+      }
       media {
         url
       }
@@ -52,7 +72,18 @@ export const handler: NextWebhookApiHandler<ProductUpdatedWebhookPayloadFragment
 ) => {
   // * product_updated event triggers on product_created as well 🤷
   const { product } = context.payload;
-  const cmsClientInstances = await createCmsClientInstances(context, product?.channel);
+  console.log("PRODUCT_UPDATED triggered");
+  // console.log("PRODUCT_UPDATED triggered 1", product);
+  return;
+  console.log(
+    "PRODUCT_UPDATED triggered 1",
+    product?.channelListings?.map((cl) => cl)
+    // following should be in PRODUCT_VARIANT_UPDATED webhook instead of here PRODUCT_UPDATED
+    // product?.variants?.map((v) =>
+    //   v.channelListings?.map((cl) => `${cl.price?.amount} ${cl.price?.currency}`)
+    // )
+  );
+  const cmsClientInstances = await createCmsClientInstances(context, undefined);
 
   console.log("PRODUCT_UPDATED", product);
   console.log("PRODUCT_UPDATED triggered");
@@ -61,7 +92,7 @@ export const handler: NextWebhookApiHandler<ProductUpdatedWebhookPayloadFragment
     cmsClientInstances.forEach(async (cmsClient) => {
       console.log("CMS client instance", cmsClient);
 
-      const cmsId = getCmsIdFromProduct(product, cmsClient.cmsProviderInstanceId);
+      const cmsId = getCmsIdFromSaleorItem(product, cmsClient.cmsProviderInstanceId);
 
       if (cmsId) {
         try {
@@ -75,7 +106,7 @@ export const handler: NextWebhookApiHandler<ProductUpdatedWebhookPayloadFragment
               id: product.id,
               name: product.name,
               image: product.media?.[0]?.url ?? "",
-              channel: product.channel,
+              channel: undefined,
             },
           });
           return res.status(200).end();

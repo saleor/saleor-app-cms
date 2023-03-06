@@ -10,6 +10,9 @@ const getFieldValue = (settingsManagerValue: string | undefined, fieldName: stri
   return settingsManagerValue ?? "";
 };
 
+/**
+ * @deprecated
+ */
 export const getSettings = async (settingsManager: EncryptedMetadataManager) => {
   // const defaultSettingNames = Object.keys(providersConfig).map((key) => `${key}.enabled`);
   // const settingsNames = Object.entries(providersConfig).reduce(

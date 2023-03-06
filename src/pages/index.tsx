@@ -23,7 +23,7 @@ const IndexPage: NextPage = () => {
   return (
     <div>
       <h1>Saleor CMS Hub</h1>
-      <p>This is Saleor App that allows to use external service to handle taxes.</p>
+      <p>This is Saleor App that allows to use external cms providers to sync products data.</p>
       <p>Install the app in your Saleor instance and open it in Dashboard.</p>
     </div>
   );

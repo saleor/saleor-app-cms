@@ -2,7 +2,7 @@ import { NextWebhookApiHandler, SaleorAsyncWebhook } from "@saleor/app-sdk/handl
 import { gql } from "urql";
 import { ProductDeletedWebhookPayloadFragment } from "../../../../generated/graphql";
 import { saleorApp } from "../../../../saleor-app";
-import { createCmsClientInstances, getCmsIdFromProduct } from "../../../lib/cms";
+import { createCmsClientInstances, getCmsIdFromSaleorItem } from "../../../lib/cms";
 
 export const config = {
   api: {
@@ -55,7 +55,7 @@ export const handler: NextWebhookApiHandler<ProductDeletedWebhookPayloadFragment
     cmsClientInstances.forEach(async (cmsClient) => {
       console.log("CMS client instance", cmsClient);
 
-      const cmsId = getCmsIdFromProduct(product, cmsClient.cmsProviderInstanceId);
+      const cmsId = getCmsIdFromSaleorItem(product, cmsClient.cmsProviderInstanceId);
 
       if (cmsId) {
         try {

@@ -42,7 +42,7 @@ export const providersConfig = {
       },
       {
         name: "itemTypeId",
-        label: "Item Type ID (either number or text)",
+        label: "Item Type ID (number)",
         required: true,
       },
       {

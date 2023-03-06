@@ -5,7 +5,7 @@ import {
   UpdateMetadataDocument,
 } from "../../../../generated/graphql";
 import { saleorApp } from "../../../../saleor-app";
-import { createCmsClientInstances, createCmsIdForProduct } from "../../../lib/cms";
+import { createCmsClientInstances, createCmsIdForSaleorItem } from "../../../lib/cms";
 import { createClient } from "../../../lib/graphql";
 
 export const config = {
@@ -92,7 +92,7 @@ export const handler: NextWebhookApiHandler<ProductCreatedWebhookPayloadFragment
             id: product.id,
             input: Object.entries(cmsProviderInstanceProductIds).map(
               ([cmsProviderInstanceId, cmsProductId]) => ({
-                key: createCmsIdForProduct(cmsProviderInstanceId),
+                key: createCmsIdForSaleorItem(cmsProviderInstanceId),
                 value: cmsProductId,
               })
             ),
