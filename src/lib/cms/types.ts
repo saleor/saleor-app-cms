@@ -1,19 +1,14 @@
 import { z } from "zod";
 import { providersConfig } from "./config";
 
-export type ProductInputPrice = {
-  channel: string;
-  amount?: number;
-  currency?: string;
-};
-
 export type ProductInput = Record<string, any> & {
   saleorId: string;
   name: string;
+  productId: string;
   productName: string;
   productSlug: string;
+  channels: string[];
   image?: string;
-  price: ProductInputPrice[];
 };
 
 export type CreateProductResponse =

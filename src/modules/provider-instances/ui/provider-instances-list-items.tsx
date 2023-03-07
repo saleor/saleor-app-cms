@@ -56,14 +56,12 @@ export interface ProviderItem {
 interface ProviderInstancesListItemsProps {
   providerInstances: SingleProviderSchema[];
   activeProviderInstance?: SingleProviderSchema | null;
-  newProviderInstance?: SingleProviderSchema | null;
   setActiveProviderInstance: (provider: SingleProviderSchema) => void;
 }
 
 const ProviderInstancesListItems = ({
   providerInstances,
   activeProviderInstance,
-  newProviderInstance,
   setActiveProviderInstance,
 }: ProviderInstancesListItemsProps) => {
   const styles = useStyles();
@@ -90,18 +88,6 @@ const ProviderInstancesListItems = ({
             </OffsettedListItemCell>
           </OffsettedListItem>
         ))}
-        {newProviderInstance && (
-          <OffsettedListItem
-            className={clsx(styles.listItem, {
-              [styles.listItemActive]: !activeProviderInstance,
-            })}
-          >
-            <OffsettedListItemCell className={styles.cell}>
-              {newProviderInstance.name}
-              <ProviderIcon providerName={newProviderInstance.providerName} />
-            </OffsettedListItemCell>
-          </OffsettedListItem>
-        )}
       </OffsettedListBody>
     </OffsettedList>
   );

@@ -21,10 +21,12 @@ type StrapiBody = {
 const transformInputToBody = ({ input }: { input: ProductInput }): StrapiBody => {
   const body = {
     data: {
+      saleor_id: input.saleorId,
       name: input.name,
-      slug: input.slug,
-      saleor_id: input.id,
-      saleor_channel: input.channel,
+      channels: JSON.stringify(input.channels),
+      product_id: input.productId,
+      product_name: input.productName,
+      product_slug: input.productSlug,
     },
   };
   return body;

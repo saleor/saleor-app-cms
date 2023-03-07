@@ -43,6 +43,10 @@ const useStyles = makeStyles((theme) => ({
   textCenter: {
     textAlign: "center",
   },
+  textHeader: {
+    textAlign: "center",
+    margin: theme.spacing(1, 0, 3, 0),
+  },
 }));
 
 const ProviderInstanceConfigurationSkeleton = () => {
@@ -138,6 +142,11 @@ const ProviderInstanceConfiguration = ({
       {errors.saving && (
         <Typography variant="body1" color="error">
           Error saving provider instance configuration
+        </Typography>
+      )}
+      {!!newProviderInstance && (
+        <Typography variant="h3" className={styles.textHeader}>
+          Add new instance
         </Typography>
       )}
       <RadioGroup value={selectedProvider?.name ?? ""} onChange={handleProviderChange}>

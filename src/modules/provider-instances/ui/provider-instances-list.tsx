@@ -69,12 +69,11 @@ const ProviderInstancesList = ({
 
   return (
     <Grid container spacing={1}>
-      {(!!providerInstances.length || newProviderInstance) && (
+      {!!providerInstances.length && (
         <Grid item xs={12}>
           <ProviderInstancesListItems
             providerInstances={providerInstances}
             activeProviderInstance={activeProviderInstance}
-            newProviderInstance={newProviderInstance}
             setActiveProviderInstance={handleSetActiveProviderInstance}
           />
         </Grid>

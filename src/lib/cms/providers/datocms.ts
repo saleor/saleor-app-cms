@@ -53,7 +53,8 @@ const datocmsOperations: CreateOperations<DatocmsConfig> = (config) => {
           },
           saleor_id: input.saleorId,
           name: input.name,
-          price: JSON.stringify(input.price),
+          channels: JSON.stringify(input.channels),
+          product_id: input.productId,
           product_name: input.productName,
           product_slug: input.productSlug,
         });
@@ -68,7 +69,8 @@ const datocmsOperations: CreateOperations<DatocmsConfig> = (config) => {
       await client.items.update(id, {
         saleor_id: input.saleorId,
         name: input.name,
-        price: JSON.stringify(input.price),
+        channels: JSON.stringify(input.channels),
+        product_id: input.productId,
         product_name: input.productName,
         product_slug: input.productSlug,
       });

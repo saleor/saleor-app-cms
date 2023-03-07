@@ -41,19 +41,13 @@ export const executeCmsClientsOperations = async ({
             id: cmsId,
             input: {
               saleorId: productVariant.id,
-              slug: productVariant.product.slug,
+              sku: productVariant.sku,
               name: productVariant.name,
               image: productVariant.product.media?.[0]?.url ?? "",
+              productId: productVariant.product.id,
               productName: productVariant.product.name,
               productSlug: productVariant.product.slug,
-              price:
-                productVariant.channelListings
-                  ?.filter((cl) => cl.price)
-                  .map((cl) => ({
-                    channel: cl.channel.slug,
-                    amount: cl.price?.amount,
-                    currency: cl.price?.currency,
-                  })) || [],
+              channels: productVariant.channelListings?.map((cl) => cl.channel.slug) || [],
             },
           });
           // return res.status(200).end();
@@ -67,19 +61,13 @@ export const executeCmsClientsOperations = async ({
           const createProductResponse = await cmsClient.operations.createProduct({
             input: {
               saleorId: productVariant.id,
-              slug: productVariant.product.slug,
+              sku: productVariant.sku,
               name: productVariant.name,
               image: productVariant.product.media?.[0]?.url ?? "",
+              productId: productVariant.product.id,
               productName: productVariant.product.name,
               productSlug: productVariant.product.slug,
-              price:
-                productVariant.channelListings
-                  ?.filter((cl) => cl.price)
-                  .map((cl) => ({
-                    channel: cl.channel.slug,
-                    amount: cl.price?.amount,
-                    currency: cl.price?.currency,
-                  })) || [],
+              channels: productVariant.channelListings?.map((cl) => cl.channel.slug) || [],
             },
           });
 
