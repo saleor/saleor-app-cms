@@ -7,7 +7,6 @@ import { CMSSchemaProviderInstances, SingleProviderSchema } from "../../lib/cms/
 import { Setting } from "../../lib/cms/utils";
 import { createClient } from "../../lib/graphql";
 import { createSettingsManager } from "../../lib/metadata";
-import { getSettings } from "../../lib/settings";
 import { generateUniqueId } from "../../modules/cms/utils";
 
 export type SettingsUpdateApiRequest = SingleProviderSchema;

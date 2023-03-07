@@ -2,9 +2,13 @@ import useChannelsFetch from "./useChannelsFetch";
 import { MergedChannelSchema, SingleChannelSchema } from "../../../../lib/cms/config";
 import { ChannelsErrors, ChannelsLoading } from "../types";
 import { useChannelsQuery } from "../../../../../generated/graphql";
+import { useEffect, useState } from "react";
 
 const useChannels = () => {
-  const [channelsQueryDara, channelsQueryOpts] = useChannelsQuery();
+  const [isMounted, setIsMounted] = useState(false);
+  const [channelsQueryData, channelsQueryOpts] = useChannelsQuery({
+    pause: !isMounted,
+  });
   const {
     saveChannel: saveChannelFetch,
     isSaving,
@@ -20,7 +24,7 @@ const useChannels = () => {
   };
 
   const loading: ChannelsLoading = {
-    fetching: isFetching || channelsQueryDara.fetching,
+    fetching: isFetching || channelsQueryData.fetching,
     saving: isSaving,
   };
 
@@ -30,7 +34,7 @@ const useChannels = () => {
   };
 
   const channels =
-    channelsQueryDara.data?.channels?.map(
+    channelsQueryData.data?.channels?.map(
       (channel) =>
         ({
           channelSlug: channel.slug,
@@ -40,6 +44,12 @@ const useChannels = () => {
           channel: channel,
         } as MergedChannelSchema)
     ) || [];
+
+  useEffect(() => {
+    if (!isMounted) {
+      setIsMounted(true);
+    }
+  }, []);
 
   return { channels, saveChannel, loading, errors };
 };
