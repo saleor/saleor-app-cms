@@ -66,9 +66,9 @@ export const productVariantUpdatedWebhook =
   new SaleorAsyncWebhook<ProductVariantUpdatedWebhookPayloadFragment>({
     name: "Cms-hub product variant updated webhook",
     webhookPath: "api/webhooks/product-variant-updated",
-    asyncEvent: "PRODUCT_VARIANT_UPDATED",
+    event: "PRODUCT_VARIANT_UPDATED",
     apl: saleorApp.apl,
-    subscriptionQueryAst: ProductVariantUpdatedSubscription,
+    query: ProductVariantUpdatedSubscription,
   });
 
 export const handler: NextWebhookApiHandler<ProductVariantUpdatedWebhookPayloadFragment> = async (

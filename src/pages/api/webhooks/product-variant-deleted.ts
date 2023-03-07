@@ -66,9 +66,9 @@ export const productVariantDeletedWebhook =
   new SaleorAsyncWebhook<ProductVariantDeletedWebhookPayloadFragment>({
     name: "Cms-hub product variant deleted webhook",
     webhookPath: "api/webhooks/product-variant-deleted",
-    asyncEvent: "PRODUCT_VARIANT_DELETED",
+    event: "PRODUCT_VARIANT_DELETED",
     apl: saleorApp.apl,
-    subscriptionQueryAst: ProductVariantDeletedSubscription,
+    query: ProductVariantDeletedSubscription,
   });
 
 export const handler: NextWebhookApiHandler<ProductVariantDeletedWebhookPayloadFragment> = async (
