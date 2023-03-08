@@ -2,8 +2,11 @@ import { NextWebhookApiHandler, SaleorAsyncWebhook } from "@saleor/app-sdk/handl
 import { gql } from "urql";
 import { ProductVariantCreatedWebhookPayloadFragment } from "../../../../generated/graphql";
 import { saleorApp } from "../../../../saleor-app";
-import { executeCmsClientsOperations, executeMetadataUpdate } from "../../../lib/cms/client";
-import { createCmsClientsOperations } from "../../../lib/cms/client-utils/clients-operations";
+import {
+  createCmsOperations,
+  executeCmsOperations,
+  executeMetadataUpdate,
+} from "../../../lib/cms/client";
 
 export const config = {
   api: {
@@ -80,7 +83,7 @@ export const handler: NextWebhookApiHandler<ProductVariantCreatedWebhookPayloadF
   console.log("PRODUCT_VARIANT_CREATED", productVariant);
 
   const productVariantChannels = productVariant?.channelListings?.map((cl) => cl.channel.slug);
-  const cmsClientsOperations = await createCmsClientsOperations({
+  const cmsOperations = await createCmsOperations({
     context,
     channelsToUpdate: productVariantChannels,
     cmsKeysToUpdate: [],
@@ -88,19 +91,19 @@ export const handler: NextWebhookApiHandler<ProductVariantCreatedWebhookPayloadF
 
   if (productVariant) {
     const {
-      cmsProviderInstanceProductVariantIds,
+      cmsProviderInstanceProductVariantIdsToCreate,
       cmsProviderInstanceProductVariantIdsToDelete,
       cmsErrors,
-    } = await executeCmsClientsOperations({
-      cmsClientsOperations,
+    } = await executeCmsOperations({
+      cmsOperations,
       productVariant,
     });
 
     await executeMetadataUpdate({
       context,
       productVariant,
-      cmsProviderInstanceProductVariantIds,
-      cmsProviderInstanceProductVariantIdsToDelete,
+      cmsProviderInstanceIdsToCreate: cmsProviderInstanceProductVariantIdsToCreate,
+      cmsProviderInstanceIdsToDelete: cmsProviderInstanceProductVariantIdsToDelete,
     });
 
     if (!cmsErrors.length) {

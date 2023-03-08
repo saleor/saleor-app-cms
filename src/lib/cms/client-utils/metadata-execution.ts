@@ -13,25 +13,25 @@ type WebhookContext = Parameters<NextWebhookApiHandler>["2"];
 export const executeMetadataUpdate = async ({
   context,
   productVariant,
-  cmsProviderInstanceProductVariantIds,
-  cmsProviderInstanceProductVariantIdsToDelete,
+  cmsProviderInstanceIdsToCreate,
+  cmsProviderInstanceIdsToDelete,
 }: {
   context: WebhookContext;
   productVariant: Exclude<
     ProductVariantUpdatedWebhookPayloadFragment["productVariant"],
     undefined | null
   >;
-  cmsProviderInstanceProductVariantIds: Record<string, string>;
-  cmsProviderInstanceProductVariantIdsToDelete: Record<string, string>;
+  cmsProviderInstanceIdsToCreate: Record<string, string>;
+  cmsProviderInstanceIdsToDelete: Record<string, string>;
 }) => {
   const { domain, token } = context.authData;
   const apiClient = createClient(`https://${domain}/graphql/`, async () => ({ token }));
 
-  if (Object.keys(cmsProviderInstanceProductVariantIds).length) {
+  if (Object.keys(cmsProviderInstanceIdsToCreate).length) {
     await apiClient
       .mutation(UpdateMetadataDocument, {
         id: productVariant.id,
-        input: Object.entries(cmsProviderInstanceProductVariantIds).map(
+        input: Object.entries(cmsProviderInstanceIdsToCreate).map(
           ([cmsProviderInstanceId, cmsProductVariantId]) => ({
             key: createCmsKeyForSaleorItem(cmsProviderInstanceId),
             value: cmsProductVariantId,
@@ -40,12 +40,12 @@ export const executeMetadataUpdate = async ({
       })
       .toPromise();
   }
-  if (Object.keys(cmsProviderInstanceProductVariantIdsToDelete).length) {
+  if (Object.keys(cmsProviderInstanceIdsToDelete).length) {
     await apiClient
       .mutation(DeleteMetadataDocument, {
         id: productVariant.id,
-        keys: Object.entries(cmsProviderInstanceProductVariantIdsToDelete).map(
-          ([cmsProviderInstanceId]) => createCmsKeyForSaleorItem(cmsProviderInstanceId)
+        keys: Object.entries(cmsProviderInstanceIdsToDelete).map(([cmsProviderInstanceId]) =>
+          createCmsKeyForSaleorItem(cmsProviderInstanceId)
         ),
       })
       .toPromise();

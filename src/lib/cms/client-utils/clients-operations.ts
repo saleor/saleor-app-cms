@@ -1,21 +1,20 @@
 import { NextWebhookApiHandler } from "@saleor/app-sdk/handlers/next";
 import { createClient } from "../../graphql";
 import { createSettingsManager } from "../../metadata";
-import { createCmsKeyForSaleorItem } from "./metadata";
 import { getEnabledProviderInstancesFromChannelSettingsList, getOperationType } from "./operations";
 import {
   getChannelsSettings,
   getProductVariantChannelsSettings,
   getProviderInstancesSettings,
 } from "./settings";
-import { CMSSchemaChannels, CMSSchemaProviderInstances, providersSchemaSet } from "../config";
+import { providersSchemaSet } from "../config";
 import cmsProviders, { CMSProvider } from "../providers";
 import { CmsClientOperations } from "../types";
 
 type WebhookContext = Parameters<NextWebhookApiHandler>["2"];
 
 // todo: add support for multiple providers at once
-export const createCmsClientsOperations = async ({
+export const createCmsOperations = async ({
   context,
   channelsToUpdate,
   cmsKeysToUpdate,
@@ -24,7 +23,6 @@ export const createCmsClientsOperations = async ({
   channelsToUpdate?: string[] | null;
   cmsKeysToUpdate?: string[] | null;
 }) => {
-  const host = context.baseUrl;
   const saleorApiUrl = context.authData.saleorApiUrl;
   const token = context.authData.token;
 
@@ -37,15 +35,11 @@ export const createCmsClientsOperations = async ({
   const channelsSettingsParsed = await getChannelsSettings(settingsManager);
   const providerInstancesSettingsParsed = await getProviderInstancesSettings(settingsManager);
 
-  console.log("cmsKeysToUpdate", cmsKeysToUpdate);
-
   const productVariantChannelsSettings = await getProductVariantChannelsSettings({
     channelsSettingsParsed,
     channelsToUpdate,
     cmsKeysToUpdate,
   });
-
-  console.log("productVariantChannelsSettings", productVariantChannelsSettings);
 
   if (
     !productVariantChannelsSettings.toCreate.length &&
@@ -64,19 +58,6 @@ export const createCmsClientsOperations = async ({
   const providerInstancesWithProductVariantToRemove =
     getEnabledProviderInstancesFromChannelSettingsList(productVariantChannelsSettings.toRemove);
 
-  console.log(
-    "providerInstancesWithProductVariantToCreate",
-    providerInstancesWithProductVariantToCreate
-  );
-  console.log(
-    "providerInstancesWithProductVariantToUpdate",
-    providerInstancesWithProductVariantToUpdate
-  );
-  console.log(
-    "providerInstancesWithProductVariantToRemove",
-    providerInstancesWithProductVariantToRemove
-  );
-
   const providerInstancesWithProductVariantToAlter = [
     ...providerInstancesWithProductVariantToCreate,
     ...providerInstancesWithProductVariantToUpdate,
@@ -86,8 +67,6 @@ export const createCmsClientsOperations = async ({
   const enabledProviderInstancesSettings = Object.values(providerInstancesSettingsParsed).filter(
     (providerInstance) => providerInstancesWithProductVariantToAlter.includes(providerInstance.id)
   );
-
-  console.log("enabledProviderInstancesSettings", enabledProviderInstancesSettings);
 
   const clientsOperations = enabledProviderInstancesSettings.reduce<CmsClientOperations[]>(
     (acc, providerInstanceSettings) => {
