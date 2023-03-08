@@ -43,7 +43,7 @@ export const Instructions = () => {
             </li>
             <li>
               To see the effect, go to <AppDashboardLink path="products">Products</AppDashboardLink>
-              . Add, update or delete any product.
+              . Add, update or delete channel listing for any product variant.
             </li>
           </ol>
         </Typography>

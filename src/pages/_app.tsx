@@ -14,7 +14,6 @@ import GraphQLProvider from "../providers/GraphQLProvider";
 import { ThemeSynchronizer } from "../lib/theme-synchronizer";
 import { RoutePropagator } from "@saleor/app-sdk/app-bridge/next";
 import { NoSSRWrapper } from "../lib/no-ssr-wrapper";
-import { Provider as JotaiProvider } from "jotai";
 import { NextPage } from "next";
 
 const themeOverrides: Partial<Theme> = {
@@ -85,13 +84,11 @@ function NextApp({ Component, pageProps }: AppPropsWithLayout) {
     <NoSSRWrapper>
       <AppBridgeProvider appBridgeInstance={appBridgeInstance}>
         <GraphQLProvider>
-          <JotaiProvider>
             <ThemeProvider palettes={palettes} overrides={themeOverrides} ssr>
               <ThemeSynchronizer />
               <RoutePropagator />
               {getLayout(<Component {...pageProps} />)}
             </ThemeProvider>
-          </JotaiProvider>
         </GraphQLProvider>
       </AppBridgeProvider>
     </NoSSRWrapper>

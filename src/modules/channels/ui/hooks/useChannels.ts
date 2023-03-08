@@ -2,10 +2,10 @@ import useChannelsFetch from "./useChannelsFetch";
 import { MergedChannelSchema, SingleChannelSchema } from "../../../../lib/cms/config";
 import { ChannelsErrors, ChannelsLoading } from "../types";
 import { useChannelsQuery } from "../../../../../generated/graphql";
-import { useEffect, useState } from "react";
+import { useIsMounted } from "usehooks-ts";
 
 const useChannels = () => {
-  const [isMounted, setIsMounted] = useState(false);
+  const isMounted = useIsMounted();
   const [channelsQueryData, channelsQueryOpts] = useChannelsQuery({
     pause: !isMounted,
   });
@@ -44,12 +44,6 @@ const useChannels = () => {
           channel: channel,
         } as MergedChannelSchema)
     ) || [];
-
-  useEffect(() => {
-    if (!isMounted) {
-      setIsMounted(true);
-    }
-  }, []);
 
   return { channels, saveChannel, loading, errors };
 };

@@ -110,31 +110,6 @@ export const handler: NextWebhookApiHandler<ProductVariantDeletedWebhookPayloadF
       return res.status(500).json({ errors: cmsErrors });
     }
   }
-
-  // const cmsClientInstances = await createCmsClientInstances(context, product?.channel);
-
-  // console.log("PRODUCT_DELETED", product);
-  // console.log("PRODUCT_DELETED triggered");
-
-  // if (product) {
-  //   cmsClientInstances.forEach(async (cmsClient) => {
-  //     console.log("CMS client instance", cmsClient);
-
-  //     const cmsId = getCmsIdFromSaleorItem(product, cmsClient.cmsProviderInstanceId);
-
-  //     if (cmsId) {
-  //       try {
-  //         await cmsClient.operations.deleteProduct({
-  //           id: cmsId,
-  //         });
-  //         return res.status(200).end();
-  //       } catch (error) {
-  //         console.log(error);
-  //         return res.status(500).json({ error });
-  //       }
-  //     }
-  //   });
-  // }
 };
 
 export default productVariantDeletedWebhook.createHandler(handler);

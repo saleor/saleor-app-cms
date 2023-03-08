@@ -1,7 +1,7 @@
 import { Link, makeStyles } from "@material-ui/core";
 import { useRouter } from "next/router";
 import { PropsWithChildren } from "react";
-import { AppTab, useActiveTab } from "./app-tabs";
+import { AppTab } from "./app-tabs";
 
 const useStyles = makeStyles((theme) => ({
   button: {

@@ -70,7 +70,7 @@ const ProviderInstancesListItems = ({
     <OffsettedList gridTemplate={["1fr", "1fr"]}>
       <OffsettedListHeader>
         <OffsettedListItem className={styles.headerItem}>
-          <OffsettedListItemCell>CMS provider</OffsettedListItemCell>
+          <OffsettedListItemCell>CMS provider instance</OffsettedListItemCell>
         </OffsettedListItem>
       </OffsettedListHeader>
       <OffsettedListBody>

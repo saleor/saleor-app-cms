@@ -2,18 +2,10 @@ import { FormControlLabel, Grid, Radio, RadioGroup, Typography } from "@material
 import { makeStyles } from "@saleor/macaw-ui";
 import Image from "next/image";
 import React from "react";
-import {
-  CMSProviderSchema,
-  providersConfig,
-  SingleProviderSchema,
-  type ProvidersSchema,
-} from "../../../lib/cms/config";
-import { useInstanceId } from "../../cms/cms-context";
+import { CMSProviderSchema, providersConfig, SingleProviderSchema } from "../../../lib/cms/config";
 import { AppPaper } from "../../ui/app-paper";
-import { CMSProvider } from "../../../lib/cms";
 import ProviderInstanceConfigurationForm from "./provider-instance-configuration-form";
 import { Skeleton } from "@material-ui/lab";
-import { ProviderItem } from "./provider-instances-list-items";
 import { ProvidersErrors, ProvidersLoading } from "./types";
 import { getProviderByName, Provider } from "../../providers/config";
 

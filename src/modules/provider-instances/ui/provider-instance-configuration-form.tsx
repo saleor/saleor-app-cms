@@ -102,7 +102,7 @@ const ProviderInstanceConfigurationForm = <TProvider extends CMSProviderSchema>(
         <Grid item xs={12}>
           <TextField
             {...register("name" as Path<ProvidersSchema[TProvider]>)}
-            label="Instance name"
+            label="Custom instance name *"
             type="text"
             name="name"
             InputLabelProps={{
@@ -120,7 +120,7 @@ const ProviderInstanceConfigurationForm = <TProvider extends CMSProviderSchema>(
                 required: "required" in token && token.required,
               })}
               // required={"required" in token && token.required}
-              label={token.label}
+              label={token.label + ("required" in token && token.required ? " *" : "")}
               type="password"
               name={token.name}
               InputLabelProps={{
@@ -129,7 +129,12 @@ const ProviderInstanceConfigurationForm = <TProvider extends CMSProviderSchema>(
               fullWidth
               // @ts-ignore TODO: fix errors typing
               error={!!errors[token.name as Path<ProvidersSchema[TProvider]>]}
-              helperText={<>{errors[token.name as Path<ProvidersSchema[TProvider]>]?.message}</>}
+              helperText={
+                <>
+                  {errors[token.name as Path<ProvidersSchema[TProvider]>]?.message ||
+                    ("helpText" in token && token.helpText)}
+                </>
+              }
             />
           </Grid>
         ))}

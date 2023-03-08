@@ -1,5 +1,4 @@
 import { makeStyles, PageTab, PageTabs } from "@saleor/macaw-ui";
-import { atom, useAtom } from "jotai";
 import { useRouter } from "next/router";
 
 const useStyles = makeStyles({
@@ -18,10 +17,6 @@ const tabs = {
 };
 
 export type AppTab = keyof typeof tabs;
-
-const activeTabAtom = atom<AppTab>("channels");
-
-export const useActiveTab = () => useAtom(activeTabAtom);
 
 interface AppTabsProps {
   activeTab: keyof typeof tabs;

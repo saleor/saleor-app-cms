@@ -13,12 +13,41 @@ export const providersConfig = {
     label: "Contentful",
     icon: ContentfulIcon,
     tokens: [
-      { name: "baseUrl", label: "Base URL" },
-      { name: "token", label: "Token" },
-      { name: "environment", label: "Environment" },
-      { name: "spaceId", label: "Space ID" },
-      { name: "contentId", label: "Content ID" },
-      { name: "locale", label: "Locale" },
+      {
+        name: "baseUrl",
+        label: "Base URL",
+        helpText: "CDN API URL of your Contentful project, e.g. https://cdn.contentful.com.",
+      },
+      {
+        name: "token",
+        label: "Token",
+        helpText:
+          "You can find this in your Contentful project, go to Settings > API keys > Content management tokens > Generate personal token.",
+      },
+      {
+        name: "environment",
+        label: "Environment",
+        helpText:
+          "Environment of your content, e.g. master. You can find this in your Contentful project, go to Settings > Environments.",
+      },
+      {
+        name: "spaceId",
+        label: "Space ID",
+        helpText:
+          "You can find this in your Contentful project, go to settings > general settings.",
+      },
+      {
+        name: "contentId",
+        label: "Content ID",
+        helpText:
+          "You can find this in your Contentful project, go to Content model > select model > Content type id.",
+      },
+      {
+        name: "locale",
+        label: "Locale",
+        helpText:
+          "Locale of your content, e.g. en-US. You can find this in your Contentful project, go to Settings > Locales.",
+      },
     ],
   },
   strapi: {
@@ -26,8 +55,19 @@ export const providersConfig = {
     label: "Strapi",
     icon: StrapiIcon,
     tokens: [
-      { name: "baseUrl", label: "Base Url" },
-      { name: "token", label: "Token" },
+      {
+        required: true,
+        name: "baseUrl",
+        label: "Base URL",
+        helpText: "API URL of your Strapi project.",
+      },
+      {
+        required: true,
+        name: "token",
+        label: "API Token (with full access)",
+        helpText:
+          "You can find this in your Strapi project settings, go to Settings > API Tokens and use full access token or create new one.",
+      },
     ],
   },
   datocms: {
@@ -36,22 +76,29 @@ export const providersConfig = {
     icon: DatocmsIcon,
     tokens: [
       {
+        required: true,
         name: "token",
         label: "API Token (with access to Content Management API)",
-        required: true,
+        helpText: "You can find this in your DatoCMS project settings.",
       },
       {
+        required: true,
         name: "itemTypeId",
         label: "Item Type ID (number)",
-        required: true,
+        helpText:
+          'You can find this as Model ID in your DatoCMS product variant model settings, by clicking "Edit model".',
       },
       {
         name: "baseUrl",
         label: "Base URL",
+        helpText:
+          "Optional URL to your DatoCMS project. If you leave this blank, this URL will be inferred from your API Token.",
       },
       {
         name: "environment",
         label: "Environment",
+        helpText:
+          "Optional environment name. If you leave this blank, default environment will be used. You can find this in your DatoCMS project settings.",
       },
     ],
   },
@@ -67,8 +114,8 @@ export const channelsConfigSchema = z.object({
 
 export const strapiConfigSchema = z.object({
   name: z.string().min(1),
-  token: z.string(),
-  baseUrl: z.string(),
+  token: z.string().min(1),
+  baseUrl: z.string().min(1),
   // enabled: z.boolean(), // @deprecated
   // enabledInChannels: z.array(z.string()),
 });
