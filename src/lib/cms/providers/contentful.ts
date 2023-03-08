@@ -39,14 +39,23 @@ const transformInputToBody = ({
 }): ContentfulBody => {
   const body = {
     fields: {
-      id: {
-        [locale]: input.id,
-      },
-      slug: {
-        [locale]: input.slug,
+      saleor_id: {
+        [locale]: input.saleorId,
       },
       name: {
         [locale]: input.name,
+      },
+      product_id: {
+        [locale]: input.productId,
+      },
+      product_slug: {
+        [locale]: input.productSlug,
+      },
+      product_name: {
+        [locale]: input.productName,
+      },
+      channels: {
+        [locale]: JSON.stringify(input.channels),
       },
       // image: {
       //   [locale]: input.image,

@@ -2,9 +2,12 @@ import { z } from "zod";
 import { providersConfig } from "./config";
 
 export type ProductInput = Record<string, any> & {
-  id: string;
-  slug: string;
+  saleorId: string;
   name: string;
+  productId: string;
+  productName: string;
+  productSlug: string;
+  channels: string[];
   image?: string;
 };
 
@@ -20,10 +23,18 @@ export type CmsOperations = {
   deleteProduct: ({ id }: { id: string }) => Promise<Response | void>;
 };
 
+export type CmsClientOperations = {
+  cmsProviderInstanceId: string;
+  operations: CmsOperations;
+  operationType: keyof CmsOperations;
+};
+
 export type GetProviderTokens<TProviderName extends keyof typeof providersConfig> =
   typeof providersConfig[TProviderName]["tokens"][number];
 
-export type BaseConfig = { enabled: boolean };
+export type BaseConfig = {
+  name: string;
+};
 
 // * Generates the config based on the data supplied in the `providersConfig` variable.
 export type CreateProviderConfig<TProviderName extends keyof typeof providersConfig> = Record<

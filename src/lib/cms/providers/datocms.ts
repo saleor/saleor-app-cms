@@ -51,9 +51,12 @@ const datocmsOperations: CreateOperations<DatocmsConfig> = (config) => {
             id: config.itemTypeId,
             type: "item_type",
           },
+          saleor_id: input.saleorId,
           name: input.name,
-          slug: input.slug,
-          saleor_id: input.id,
+          channels: JSON.stringify(input.channels),
+          product_id: input.productId,
+          product_name: input.productName,
+          product_slug: input.productSlug,
         });
         return transformResponseItem(item);
       } catch (error) {
@@ -64,9 +67,12 @@ const datocmsOperations: CreateOperations<DatocmsConfig> = (config) => {
       const client = datocmsClient(config);
 
       await client.items.update(id, {
+        saleor_id: input.saleorId,
         name: input.name,
-        slug: input.slug,
-        saleor_id: input.id,
+        channels: JSON.stringify(input.channels),
+        product_id: input.productId,
+        product_name: input.productName,
+        product_slug: input.productSlug,
       });
     },
     deleteProduct: async ({ id }) => {
